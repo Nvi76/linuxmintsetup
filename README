@@ -1,11 +1,13 @@
-make sure you already installed firefox and thunderbird snap already before running de.sh and i expect you
+1. make sure you already installed firefox and thunderbird snap already before running de.sh and i expect you
 to already install the nala package, git and also optional snap-store
 
-install commands
-  "snap install firefox" && "snap install thunderbird" && "snap install snap-store"
-and also if you found the flatpak "note that directories (void) is not on path" here's the fix
+2. and also if you found the flatpak "note that directories (void) is not on path" here's the fix
 
-1.nano ~/.bashrc
-2. add to .bashrc this
-   export XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/$USER/.local/share/flatpak/exports/share
-3.source ~/.bashrc
+  ---nano ~/.bashrc
+  ---add to .bashrc this
+  ---export XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/$USER/.local/share/flatpak/exports/share
+  ---source ~/.bashrc
+
+3. /etc/gdm3/custom.conf = WaylandEnable=true
+
+4. /etc/default/grub = GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
