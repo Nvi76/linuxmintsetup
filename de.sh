@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Elevating file permissions
-chmod +x secure.sh && chmod +x updater.sh && chmod +x apps.sh && chmod +x cliapps.sh 
+chmod +x secure.sh && chmod +x updater.sh && chmod +x apps.sh && chmod +x cliapps.sh && chmod +x ollama.sh
 
 # Updating the syste,
 sudo apt update -y && sudo apt upgrade -y 
