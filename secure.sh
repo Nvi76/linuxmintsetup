@@ -13,7 +13,7 @@ curl -o /tmp/hblock 'https://raw.githubusercontent.com/hectorm/hblock/v3.5.1/hbl
   && sudo chmod 755 /usr/local/bin/hblock && hblock 
 
 # Installing security apps
-sudo nano /etc/fail2ban/jail.local && sudo systemctl restart fail2ban && sudo nala install figlet fail2ban clamav clamav-daemon 
+sudo nano /etc/fail2ban/jail.local && sudo systemctl restart fail2ban && sudo apt install nala figlet fail2ban clamav clamav-daemon 
 
 # Enabling services
 sudo systemctl start fail2ban && sudo systemctl enable fail2ban && sudo systemctl enable clamav-daemon 
