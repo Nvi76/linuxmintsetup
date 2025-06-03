@@ -6,7 +6,7 @@ set -euo pipefail
 sudo apt update -y && sudo apt upgrade -y
 
 # Installing snap applications
-sudo snap refresh && sudo snap install code --classic && sudo snap install codium --classic && sudo snap install firmware-updater qbittorrent-arnatious notion-desktop element-desktop varia discord vlc telegram-desktop && sudo snap connect varia:shutdown 
+sudo snap refresh && sudo snap install code --classic && sudo snap install codium --classic && sudo snap install qbittorrent-arnatious notion-desktop element-desktop varia discord vlc telegram-desktop && sudo snap connect varia:shutdown 
 
 # Importing signal's keyring and repo
 wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > signal-desktop-keyring.gpg &&
