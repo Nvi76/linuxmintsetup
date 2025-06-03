@@ -6,7 +6,7 @@ set -euo pipefail
 sudo apt update -y && sudo apt upgrade -y
 
 # Installing snap applications
-sudo snap refresh && sudo snap install code --classic && sudo snap install codium --classic && sudo snap install qbittorrent-arnatious notion-desktop notion-calendar-snap element-desktop varia discord vlc telegram-desktop && sudo snap connect varia:shutdown 
+sudo snap refresh && sudo snap install code --classic && sudo snap install codium --classic && sudo snap install qbittorrent-arnatious notion-desktop element-desktop varia discord vlc telegram-desktop && sudo snap connect varia:shutdown 
 
 # Importing signal's keyring and repo
 wget -O- https://updates.signal.org/desktop/apt/keys.asc | gpg --dearmor > signal-desktop-keyring.gpg &&
@@ -34,9 +34,9 @@ sudo nala install ./portmaster.deb -y && sudo nala install ./anytype.deb
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 # Installing flatpak apps
-flatpak install flathub com.rtosta.zapzap network.loki.Session org.gnome.Decibels re.sonny.Junction net.mullvad.MullvadBrowser com.microsoft.Edge net.codelogistics.webapps io.frama.tractor.carburetor org.torproject.torbrowser-launcher com.protonvpn.www com.github.johnfactotum.QuickLookup app.drey.Dialect io.github.fkinoshita.Telegraph app.zen_browser.zen org.qbittorrent.qBittorrent org.mozilla.Thunderbird com.github.PintaProject.Pinta org.telegram.desktop com.discordapp.Discord org.gnome.Firmware com.mattjakeman.ExtensionManager com.github.tchx84.Flatseal io.github.giantpinkrobots.varia me.proton.Pass io.github.josephmawa.Bella io.github.celluloid_player.Celluloid io.bassi.Amberol com.belmoussaoui.Obfuscate io.github.giantpinkrobots.flatsweep org.gnome.design.Lorem org.inkscape.Inkscape com.logseq.Logseq org.cryptomator.Cryptomator dev.qwery.AddWater org.signal.Signal org.localsend.localsend_app io.github._0xzer0x.qurancompanion org.gimp.GIMP --noninteractive
+flatpak install flathub com.rtosta.zapzap network.loki.Session org.gnome.Decibels re.sonny.Junction net.mullvad.MullvadBrowser net.codelogistics.webapps io.frama.tractor.carburetor org.torproject.torbrowser-launcher com.protonvpn.www com.github.johnfactotum.QuickLookup app.drey.Dialect io.github.fkinoshita.Telegraph app.zen_browser.zen org.qbittorrent.qBittorrent org.mozilla.Thunderbird com.github.PintaProject.Pinta org.telegram.desktop com.discordapp.Discord com.mattjakeman.ExtensionManager com.github.tchx84.Flatseal io.github.giantpinkrobots.varia me.proton.Pass io.github.josephmawa.Bella io.github.celluloid_player.Celluloid org.onlyoffice.desktopeditors com.belmoussaoui.Obfuscate io.github.giantpinkrobots.flatsweep org.gnome.design.Lorem org.inkscape.Inkscape com.logseq.Logseq org.cryptomator.Cryptomator dev.qwery.AddWater org.signal.Signal org.localsend.localsend_app io.github._0xzer0x.qurancompanion org.gimp.GIMP it.mijorus.gearlever --noninteractive
 
-# 95%
+# 85%
 figlet 95% Complete
 
 # Installing Homebrew packages (make sure to have homebrew already installed)
