@@ -22,7 +22,7 @@ sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://b
 sudo apt update -y && sudo apt upgrade -y 
 
 # Installing deb packages
-sudo nala install btop flatpak neovim kitty kakoune nautilus-extension-gnome-terminal signal-desktop gnome-software-plugin-flatpak gnome-shell-extension-manager gnome-weather gnome-tweaks gnome-maps gnome-calendar build-essential ubuntu-restricted-extras timeshift libreoffice brave-browser -y 
+sudo nala install btop epiphany-browser flatpak neovim kitty kakoune nautilus-extension-gnome-terminal signal-desktop gnome-software-plugin-flatpak gnome-shell-extension-manager gnome-weather gnome-tweaks gnome-maps gnome-calendar build-essential ubuntu-restricted-extras timeshift libreoffice brave-browser -y 
 
 # 40%
 figlet 40% Complete
