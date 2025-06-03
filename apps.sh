@@ -6,7 +6,7 @@ set -euo pipefail
 sudo apt update -y && sudo apt upgrade -y
 
 # Installing snap applications
-sudo snap refresh && sudo snap install code --classic && sudo snap install codium --classic && sudo snap install qbittorrent-arnatious signal-desktop notion-desktop element-desktop varia discord vlc telegram-desktop && sudo snap connect varia:shutdown 
+sudo snap refresh && sudo snap install code --classic && sudo snap install codium --classic && sudo snap install signal-desktop qbittorrent-arnatious notion-desktop element-desktop varia discord vlc telegram-desktop && sudo snap connect varia:shutdown 
 
 # Downloading anytype
 curl https://anytype-release.fra1.cdn.digitaloceanspaces.com/anytype_0.46.8_amd64.deb --output anytype.deb
