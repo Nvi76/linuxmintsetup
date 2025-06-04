@@ -17,7 +17,7 @@ sudo apt update -y && sudo apt upgrade -y
 # Installing deb apps
 sudo nala install btop epiphany-browser flatpak neovim kakoune nautilus-extension-gnome-terminal gnome-software-plugin-flatpak gnome-shell-extension-manager vlc gnome-weather gnome-tweaks gnome-maps gnome-calendar build-essential ubuntu-restricted-extras timeshift libreoffice brave-browser -y 
 
-# Install cursor and anytype yourself
+# Install cursor, anytyp, and chrome yourself yourself
 
 # 40%
 figlet 40% Complete
