@@ -35,7 +35,7 @@ figlet 65% Complete
 flatpak install flathub com.rtosta.zapzap   --noninteractive
 
 # 85%
-figlet 95% Complete
+figlet 85% Complete
 
 # Installing Homebrew packages (make sure to have homebrew already installed)
 brew install gcc thefuck fzf ranger mailsy 
