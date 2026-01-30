@@ -16,7 +16,7 @@ curl -o /tmp/hblock 'https://raw.githubusercontent.com/hectorm/hblock/v3.5.1/hbl
 curl https://updates.safing.io/latest/linux_amd64/packages/portmaster-installer.deb --output portmaster.deb
 
 # Installing security apps
-sudo nala install figlet fail2ban clamav clamav-daemon gufw ufw -y && sudo nala install ./portmaster.deb -y && sudo nano /etc/fail2ban/jail.local && sudo systemctl restart fail2ban 
+sudo nala install fail2ban clamav clamav-daemon -y && sudo nala install ./portmaster.deb -y && sudo nano /etc/fail2ban/jail.local && sudo systemctl restart fail2ban 
 
 # Enabling services
 sudo systemctl start fail2ban && sudo systemctl enable fail2ban && sudo systemctl enable clamav-daemon 
