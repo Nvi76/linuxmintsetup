@@ -18,7 +18,7 @@ echo -e 'Types: deb\nURIs: https://download.vscodium.com/debs\nSuites: vscodium\
 | sudo tee /etc/apt/sources.list.d/vscodium.sources
 
 # Updates the system
-sudo apt update -y && sudo apt upgrade -y
+sudo nala update -y && sudo nala upgrade -y
 
 # 30%
 figlet 30% Complete
