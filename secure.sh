@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Copying hosts file
-sudo cp /etc/hosts ~/ubuntusetup 
+sudo cp /etc/hosts ~/linuxmintsetup 
 
 # Installing hblock
 curl -o /tmp/hblock 'https://raw.githubusercontent.com/hectorm/hblock/v3.5.1/hblock' \
