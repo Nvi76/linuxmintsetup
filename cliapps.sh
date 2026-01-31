@@ -3,23 +3,31 @@
 set -euo pipefail
 
 # Updates the system
-sudo apt update && sudo apt upgrade
-
-# Installing essential packages
-sudo apt install build-essential fish nala curl git -y
-
-# Run in fish
-fish
+sudo nala update && sudo nala upgrade
 
 # Installing Atuin
 curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 
+# Setting up atuin
+mkdir -p ~/.config/fish
+
+# Append Atuin config to fish config
+cat >> ~/.config/fish/config.fish << 'EOF'
+if status is-interactive
+    set -gx ATUIN_NOBIND "true"
+    atuin init fish | source
+    bind \cr _atuin_search
+    bind -M insert \cr _atuin_search
+end
+EOF
+
 # Installing Homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 
+sudo curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash  
 
-# Following Homebrews' instructions
-sudo apt-get install build-essential -y
+# Adding Homebrew to shell PATH
+ echo >> ~/.config/fish/config.fish
+    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)"' >> ~/.config/fish/config.fish
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)"
 
-# Following Homebrews' instructions, note that it is reccommended to copy the command homebrew will give instead so make sure to use that command as a precaution
-echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.profile
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# Updating fish
+source ~/.config/fish/config.fish
