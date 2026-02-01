@@ -12,10 +12,7 @@ curl https://updates.safing.io/latest/linux_amd64/packages/portmaster-installer.
 sudo apt install build-essential nala fish curl git
 
 # Installing security apps
-sudo nala install fail2ban clamav -y && sudo nala install ./portmaster.deb -y && sudo nano /etc/fail2ban/jail.local && sudo systemctl restart fail2ban 
-
-# Enabling services
-sudo systemctl start fail2ban && sudo systemctl enable fail2ban
+sudo nala install clamav -y && sudo nala install ./portmaster.deb -y 
 
 # Updating Clamav
 sudo rm /var/log/clamav/freshclam.log && sudo freshclam
