@@ -59,4 +59,4 @@ sudo nala update -y
 sudo nala upgrade -y
 
 # Done
-figlet Setup Complete. Enjoy your PC
+figlet Setup Complete. Enjoy your PC :>
