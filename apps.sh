@@ -36,6 +36,7 @@ flatpak install flathub \
     com.rtosta.zapzap \
     org.kde.krita
     org.gimp.GIMP \
+    
     --noninteractive
 
 # 50%
