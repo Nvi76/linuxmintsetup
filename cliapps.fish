@@ -10,7 +10,7 @@ end
 
 # Update system
 sudo nala update -y
-and sudo nala upgrade -y
+sudo nala upgrade -y
 
 # Install Atuin
 curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
