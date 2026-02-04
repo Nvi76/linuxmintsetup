@@ -49,4 +49,5 @@ eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)
 # Reload config
 source ~/.config/fish/config.fish
 
-echo "Setup completed."
+# Installation complete
+figlet Installation Complete
