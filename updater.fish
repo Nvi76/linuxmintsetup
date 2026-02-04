@@ -11,9 +11,6 @@ flatpak update -y
 brew update
 and brew upgrade
 
-# Update hblock
-hblock
-
 # Update ClamAV
 sudo freshclam
 
