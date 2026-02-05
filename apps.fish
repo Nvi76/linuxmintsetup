@@ -58,5 +58,8 @@ sudo nala install ./vscode.deb
 sudo nala update -y 
 sudo nala upgrade -y
 
+# Installing Homebrew Apps
+brew install neovim thefuck
+
 # Done
 figlet Setup Complete. Enjoy your PC :>
