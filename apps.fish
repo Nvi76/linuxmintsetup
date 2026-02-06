@@ -61,4 +61,4 @@ sudo nala upgrade -y
 brew install neovim thefuck
 
 # Done
-figlet Setup Complete. Enjoy your PC :>
+figlet Setup Complete. Enjoy your PC 
