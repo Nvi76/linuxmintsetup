@@ -2,20 +2,28 @@
 
 set -euo pipefail
 
-# Copying hosts file
-sudo cp /etc/hosts ~/linuxmintsetup 
+# Create backup directory if missing
+mkdir -p ~/linuxmintsetup
 
-# Downloading safing portmaster
-curl https://updates.safing.io/latest/linux_amd64/packages/portmaster-installer.deb --output portmaster.deb
+# Copy hosts file
+sudo cp /etc/hosts ~/linuxmintsetup/hosts.backup
 
-# Installing essential packages
-sudo apt install build-essential nala fish curl git -y
+# Download Portmaster
+curl -L https://updates.safing.io/latest/linux_amd64/packages/portmaster-installer.deb \
+-o portmaster.deb
 
-# Installing security apps
-sudo nala install clamav -y && sudo nala install ./portmaster.deb -y 
+# Install essential packages
+sudo apt update
+sudo apt install -y build-essential nala fish curl git
 
-# Updating Clamav
-sudo rm /var/log/clamav/freshclam.log && sudo freshclam
+# Install security apps
+sudo nala install -y clamav
+sudo nala install -y ./portmaster.deb
 
-# Changing to fish shell
+# Update ClamAV
+sudo systemctl stop clamav-freshclam
+sudo freshclam
+sudo systemctl start clamav-freshclam
+
+# Change default shell to fish
 chsh -s /usr/bin/fish
