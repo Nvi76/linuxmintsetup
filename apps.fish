@@ -52,12 +52,13 @@ org.gimp.GIMP \
 figlet "50% Complete" 2>/dev/null; or echo "50% Complete"
 
 # Install packages
-sudo nala install \
+sudo nala install -y \
 cava \
 codium \
 pipx \
 brave-browser \
--y; or exit 1
+spotify-client \
+; or exit 1
 
 # Install VS Code
 sudo nala install ./vscode.deb -y; or exit 1
@@ -71,7 +72,7 @@ sudo nala upgrade -y; or exit 1
 
 # Homebrew apps
 if type -q brew
-    brew install neovim thefuck fzf ranger btop trash-cli
+    brew install neovim thefuck fzf ranger btop trash-cli ffmpeg
 end
 
 # Done
