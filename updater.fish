@@ -1,27 +1,19 @@
 #!/usr/bin/env fish
 
 # Update ClamAV
-sudo freshclam
-or exit 1
+sudo freshclam; or exit 1
 
 # Update system
-sudo nala update -y
-or exit 1
-
-sudo nala upgrade -y
-or exit 1
+sudo nala update; or exit 1
+sudo nala upgrade -y; or exit 1
 
 # Update Flatpak apps
-flatpak update -y
-or exit 1
+flatpak update -y; or exit 1
 
 # Update Homebrew (if installed)
 if type -q brew
-    brew update
-    or exit 1
-
-    brew upgrade
-    or exit 1
+    brew update; or exit 1
+    brew upgrade; or exit 1
 end
 
 # Done
