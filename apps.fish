@@ -41,9 +41,6 @@ sudo nala upgrade -y; or exit 1
 # Progress
 figlet "30% Complete" 2>/dev/null; or echo "30% Complete"
 
-# Ensure Flathub exists
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
 # Install Flatpak apps
 flatpak install flathub \
 com.rtosta.zapzap \
