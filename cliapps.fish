@@ -5,7 +5,7 @@ sudo nala update; or exit 1
 sudo nala upgrade -y; or exit 1
 
 # Install Cliapps
-sudo nala install -y figlet fish curl git vulkan-tools build-essential python3-tk pipx; or exit 1
+sudo nala install -y figlet fish curl git vulkan-tools build-essential python3-tk python3-distutils spipx; or exit 1
 
 # Install Atuin
 curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh; or exit 1
