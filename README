@@ -2,30 +2,28 @@
 
 2. Make sure to get this in ~/.config/fish/config.fish
 if status is-interactive
-    # Commands to run in interactive sessions can go here
+    # Prevent Atuin from setting its own (broken) bindings
+    set -gx ATUIN_NOBIND true
+    atuin init fish | source
+
+    # Manually bind keys using modern Fish syntax
+    bind \e\[A _atuin_bind_up   # Up Arrow
+    bind \cr _atuin_search     # Ctrl+R
+
+    # Vi mode bindings (if Vi mode exists)
+    if bind -M insert >/dev/null 2>&1
+        bind -M insert \e\[A _atuin_bind_up
+        bind -M insert \cr _atuin_search
+    end
+    
+    # Ctrl+Delete = delete word forward
+    bind \e\[3\;5~ kill-word
+
 end
 
-# Prevent Atuin from setting its own (broken) bindings
-set -gx ATUIN_NOBIND true
-atuin init fish | source
-
-# Manually bind keys using modern Fish syntax
-bind \e\[A _atuin_bind_up # Bind Up Arrow
-bind \cr _atuin_search # Bind Ctrl+R
-
-# Prevent Atuin from setting its own (broken) bindings
-set -gx ATUIN_NOBIND true
-atuin init fish | source
-
-# Manually bind keys using modern Fish syntax
-bind \e\[A _atuin_bind_up # Bind Up Arrow
-bind \cr _atuin_search # Bind Ctrl+R
-
-# For Vi mode:
-if bind -M insert >/dev/null 2>&1
-    bind -M insert \e\[A _atuin_bind_up
-    bind -M insert \cr _atuin_search
-end
+# Aliases
+alias lsa "ls -a"
+alias update "~/.updater.fish"
 
 3. after installing homebrew make sure to manually copy the command that homebrew will gave you if it detects homebrew is not on path just to make sure
  echo >> /home/user/.config/fish/config.fish
