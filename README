@@ -24,10 +24,6 @@ end
 alias lsa "ls -a"
 alias update "~/.updater.fish"
 
-# Aliases
-alias lsa "ls -a"
-alias update "~/.updater.fish"
-
 2. after installing homebrew make sure to manually copy the command that homebrew will gave you if it detects homebrew is not on path just to make sure
 
 echo >> /home/user/.config/fish/config.fish
