@@ -36,12 +36,16 @@ end
 # Install Homebrew
 curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | bash; or exit 1
 
-# Add Homebrew to PATH if missing
-if not grep -q "brew shellenv" $config_file 2>/dev/null
-
-    printf '\n/home/linuxbrew/.linuxbrew/bin/brew shellenv | source\n' >> $config_file
-
+# Ensure the config directory exists
+if not test -d ~/.config/fish
+    mkdir -p ~/.config/fish
 end
+
+# Append the Homebrew setup to Fish config
+echo 'eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)' >> ~/.config/fish/config.fish
+
+# Evaluate the Homebrew environment in the current session
+eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)   
 
 # Apply brew env
 /home/linuxbrew/.linuxbrew/bin/brew shellenv | source
