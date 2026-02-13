@@ -1,5 +1,8 @@
 #!/usr/bin/env fish
 
+# Change dir to home
+cd ~
+
 # Cloning the directory 
 git clone https://github.com/AdnanHodzic/auto-cpufreq.git
 
