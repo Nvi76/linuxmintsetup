@@ -28,7 +28,6 @@ alias update "~/.updater.fish"
 alias copy "wl-copy <"
 alias paste "wl-paste >"
 alias scan "clamscan"
-alias scand "clamdscan --fdpass"
 
 /home/linuxbrew/.linuxbrew/bin/brew shellenv | source
 
