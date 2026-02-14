@@ -28,16 +28,9 @@ sudo nala install -y ./portmaster.deb || sudo apt -f install -y
 # Cleanup
 rm -f portmaster.deb
 
-# Configuring the clamd.conf file
-sudo nano /etc/clamav/clamd.conf
-# OnAccessIncludePath /home
-# OnAccessExcludePath /home/user/Downloads
-# OnAccessPrevention true
-
 # Enabling Services
 sudo systemctl enable --now clamav-freshclam
 sudo systemctl enable --now clamav-daemon
-sudo systemctl enable --now clamav-clamonacc  
 
 # Update ClamAV
 sudo systemctl stop clamav-freshclam
