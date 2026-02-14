@@ -28,8 +28,13 @@ alias update "~/.updater.fish"
 alias copy "wl-copy <"
 alias paste "wl-paste >"
 alias scan "clamscan"
+alias trm "trash-put"
+alias trestore "trash-restore"
+alias tbin "trash-empty"
+alias listt "trash-list"
 
 /home/linuxbrew/.linuxbrew/bin/brew shellenv | source
+
 
 
 2. after installing homebrew make sure to manually copy the command that homebrew will gave you if it detects homebrew is not on path just to make sure
