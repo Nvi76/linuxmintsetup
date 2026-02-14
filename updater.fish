@@ -1,7 +1,9 @@
 #!/usr/bin/env fish
 
 # Update ClamAV
+sudo systemctl stop clamav-freshclam; or exit 1
 sudo freshclam; or exit 1
+sudo systemctl start clamav-freshclam; or exit 1
 
 # Update system
 sudo nala update; or exit 1
