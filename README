@@ -28,9 +28,9 @@ alias update "~/.updater.fish"
 alias copy "wl-copy <"
 alias paste "wl-paste >"
 alias scan "clamscan"
+alias scand "clamdscan --fdpass"
 
 /home/linuxbrew/.linuxbrew/bin/brew shellenv | source
-
 
 
 2. after installing homebrew make sure to manually copy the command that homebrew will gave you if it detects homebrew is not on path just to make sure
