@@ -30,7 +30,6 @@ rm -f portmaster.deb
 
 # Enabling Services
 sudo systemctl enable --now clamav-freshclam
-sudo systemctl enable --now clamav-daemon
 
 # Update ClamAV
 sudo systemctl stop clamav-freshclam
