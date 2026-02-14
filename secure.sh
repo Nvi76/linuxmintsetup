@@ -8,10 +8,10 @@ sudo -v
 chmod +x updater.fish && chmod +x cliapps.fish && chmod +x apps.fish && chmod +x autocpufreq.fish
 
 # Backup directory
-mkdir -p "$HOME/PopOS-setup"
+mkdir -p "$HOME/linuxmintsetup"
 
 # Backup hosts
-sudo cp /etc/hosts "$HOME/PopOS-setup/hosts.backup"
+sudo cp /etc/hosts "$HOME/linuxmintsetup/hosts.backup"
 
 # Download Portmaster
 curl -fL https://updates.safing.io/latest/linux_amd64/packages/portmaster-installer.deb \
