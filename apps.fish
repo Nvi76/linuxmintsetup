@@ -39,7 +39,7 @@ sudo nala upgrade -y; or exit 1
 figlet "30% Complete" 2>/dev/null; or echo "30% Complete"
 
 # Install Flatpak apps
-flatpak install com.rtosta.zapzap app.zen_browser.zen org.gimp.GIMP org.luanti.luanti --noninteractive; or exit 1
+flatpak install com.rtosta.zapzap app.zen_browser.zen org.gimp.GIMP --noninteractive; or exit 1
 
 # 50%
 figlet "50% Complete" 2>/dev/null; or echo "50% Complete"
