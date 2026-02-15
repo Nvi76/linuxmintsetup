@@ -42,22 +42,13 @@ sudo nala upgrade -y; or exit 1
 figlet "30% Complete" 2>/dev/null; or echo "30% Complete"
 
 # Install Flatpak apps
-flatpak install flathub \
-com.rtosta.zapzap \
-app.zen_browser.zen \
-org.gimp.GIMP \
-org.luanti.luanti
---noninteractive; or exit 1
+flatpak install com.rtosta.zapzap app.zen_browser.zen org.gimp.GIMP org.luanti.luanti --noninteractive; or exit 1
 
 # 50%
 figlet "50% Complete" 2>/dev/null; or echo "50% Complete"
 
 # Install packages
-sudo nala install -y \
-cava \
-codium \
-brave-browser
-; or exit 1
+sudo nala install -y codium brave-browser; or exit 1
 
 # Install VS Code
 sudo nala install ./vscode.deb -y; or exit 1
@@ -78,4 +69,4 @@ end
 sudo nala install -y nvidia-driver-580
 
 # Done
-figlet "Setup Complete Enjoy Your PC" 2>/dev/null; or echo "Setup Complete Enjoy Your PC"
+figlet "Setup Complete Enjoy Your PC" 2>/dev/null; or echo "Setup Complete Enjoy Your PC"Your PC"
