@@ -36,6 +36,9 @@ sudo systemctl stop clamav-freshclam
 sudo freshclam
 sudo systemctl start clamav-freshclam
 
+# Install nixpkg
+sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
+
 # Set default shell
 chsh -s /usr/bin/fish
 
