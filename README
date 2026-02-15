@@ -23,8 +23,8 @@ end
 # Aliases
 alias lsa "ls -a"
 alias update "~/.updater.fish"
-alias copy "copyq copy - < "
-alias paste "copyq clipboard > "
+alias copy "wl-copy < "
+alias paste "wl-paste > > "
 alias scan "clamscan"
 alias trm "trash-put"
 alias trestore "trash-restore"
