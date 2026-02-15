@@ -12,10 +12,8 @@ https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" \
 | sudo tee /etc/apt/sources.list.d/brave-browser-release.list >/dev/null; or exit 1
 
-# Download VS Code
-curl -fL \
-https://vscode.download.prss.microsoft.com/dbazure/download/stable/bdd88df003631aaa0bcbe057cb0a940b80a476fa/code_1.109.0-1770171879_amd64.deb \
--o vscode.deb; or exit 1
+# Add luanti's PPA
+sudo add-apt-repository ppa:minetestdevs/stable
 
 # Import VSCodium keyring
 wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg \
@@ -31,6 +29,11 @@ Architectures: amd64 arm64
 Signed-by: /usr/share/keyrings/vscodium-archive-keyring.gpg
 " | sudo tee /etc/apt/sources.list.d/vscodium.sources >/dev/null; or exit 1
 
+# Download VS Code
+curl -fL \
+https://vscode.download.prss.microsoft.com/dbazure/download/stable/bdd88df003631aaa0bcbe057cb0a940b80a476fa/code_1.109.0-1770171879_amd64.deb \
+-o vscode.deb; or exit 1
+
 # Update after repos
 sudo nala update; or exit 1
 sudo nala upgrade -y; or exit 1
@@ -39,13 +42,13 @@ sudo nala upgrade -y; or exit 1
 figlet "30% Complete" 2>/dev/null; or echo "30% Complete"
 
 # Install Flatpak apps
-flatpak install com.rtosta.zapzap app.zen_browser.zen org.gimp.GIMP --noninteractive; or exit 1
+flatpak install com.rtosta.zapzap app.zen_browser.zen org.gimp.GIMP com.github.tchx84.Flatseal --noninteractive; or exit 1
 
 # 50%
 figlet "50% Complete" 2>/dev/null; or echo "50% Complete"
 
 # Install packages
-sudo nala install -y codium brave-browser; or exit 1
+sudo nala install -y codium brave-browser minetest; or exit 1
 
 # Install VS Code
 sudo nala install ./vscode.deb -y; or exit 1
