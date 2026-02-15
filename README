@@ -25,13 +25,17 @@ thefuck --alias | source
 # Aliases
 alias lsa "ls -a"
 alias update "~/.updater.fish"
-alias copy "wl-copy <"
-alias paste "wl-paste >"
+alias copy "copyq copy - < "
+alias paste "copyq clipboard > "
 alias scan "clamscan"
 alias trm "trash-put"
 alias trestore "trash-restore"
 alias tbin "trash-empty"
 alias listt "trash-list"
+
+/home/linuxbrew/.linuxbrew/bin/brew shellenv | source
+eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)
+
 
 /home/linuxbrew/.linuxbrew/bin/brew shellenv | source
 
