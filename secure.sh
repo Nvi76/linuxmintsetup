@@ -19,7 +19,7 @@ curl -fL https://updates.safing.io/latest/linux_amd64/packages/portmaster-instal
 
 # Install base packages
 sudo apt update
-sudo apt install -y build-essential nala fish curl git
+sudo apt install -y build-essential nala fish curl figlet
 
 # Install security apps
 sudo nala install -y clamav clamav-base clamav-freshclam
