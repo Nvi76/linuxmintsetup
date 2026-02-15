@@ -13,7 +13,7 @@ echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] http
 | sudo tee /etc/apt/sources.list.d/brave-browser-release.list >/dev/null; or exit 1
 
 # Add luanti's PPA
-sudo add-apt-repository ppa:minetestdevs/stable
+sudo add-apt-repository ppa:minetestdevs/stable -y; or exit 1
 
 # Import VSCodium keyring
 wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg \
