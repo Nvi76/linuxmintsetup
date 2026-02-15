@@ -59,7 +59,7 @@ sudo nala upgrade -y; or exit 1
 
 # Homebrew apps
 if type -q brew
-    brew install neovim fzf ranger btop trash-cli ffmpeg fastfetch
+    brew install neovim fzf ranger btop thefuck trash-cli ffmpeg fastfetch
 end
 
 # Installing nvidia drivers
