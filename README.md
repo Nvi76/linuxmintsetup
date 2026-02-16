@@ -1,3 +1,6 @@
+
+# PopOS_Setup    
+
 1. Make sure the config file in ~/.config/fish/config.fish is like this
 
 if status is-interactive
