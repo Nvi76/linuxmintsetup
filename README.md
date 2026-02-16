@@ -1,7 +1,8 @@
 
 # PopOS_Setup    
 
-# 1. Make sure the config file in ~/.config/fish/config.fish is like this
+# 1. ~/.config/fish/config.fish
+Make sure the config file in ~/.config/fish/config.fish is like this
 ```
 if status is-interactive
     # Prevent Atuin from setting its own (broken) bindings
@@ -38,7 +39,8 @@ thefuck --alias | source
 
 /home/linuxbrew/.linuxbrew/bin/brew shellenv | source
 ```
-# 2. after installing homebrew make sure to manually copy the command that homebrew will gave you if it detects homebrew is not on path just to make sure
+# 2. Homebrew
+After installing homebrew make sure to manually copy the command that homebrew will gave you if it detects homebrew is not on path just to make sure
 ```
 # Ensure the config directory exists
 if not test -d ~/.config/fish
@@ -51,5 +53,8 @@ echo 'eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)' >> ~/.config/fis
 # Evaluate the Homebrew environment in the current session
 eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)
 ```
-# 3. make sure the /etc/nix/nix.conf file have this inside of it
+# 3. /etc/nix/nix.conf
+make sure the /etc/nix/nix.conf file have this inside of it
+   ```
     experimental-features = nix-command flakes
+   ```
