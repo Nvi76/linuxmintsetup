@@ -1,5 +1,6 @@
 
-# PopOS_Setup    
+# Ubuntu Setup Script
+Specifically for Pop_OS! 24.04 stable
 
 # 1. ~/.config/fish/config.fish
 Make sure the config file in ~/.config/fish/config.fish is like this
