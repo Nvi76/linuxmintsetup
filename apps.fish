@@ -17,7 +17,7 @@ sudo nala upgrade -y; or exit 1
 figlet "30% Complete" 2>/dev/null; or echo "30% Complete"
 
 # Install Flatpak apps
-flatpak install com.rtosta.zapzap app.zen_browser.zen org.gimp.GIMP com.github.tchx84.Flatseal org.luanti.luanti net.agalwood.Motrix com.logseq.Logseq --noninteractive; or exit 1
+flatpak install com.rtosta.zapzap app.zen_browser.zen org.gimp.GIMP com.github.tchx84.Flatseal org.luanti.luanti net.agalwood.Motrix com.logseq.Logseq it.mijorus.gearlever --noninteractive; or exit 1
 
 # 50%
 figlet "50% Complete" 2>/dev/null; or echo "50% Complete"
