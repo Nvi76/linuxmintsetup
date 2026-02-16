@@ -1,6 +1,6 @@
 
 # Ubuntu Setup Script
-Specifically for Pop_OS! 24.04 stable
+Specifically for Pop_OS! 24.04 stable and other ubuntu based distros with wayland
 
 # 1. ~/.config/fish/config.fish
 Make sure the config file in ~/.config/fish/config.fish is like this
