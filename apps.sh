@@ -623,6 +623,15 @@ while true; do
         Y|y)
             echo "Installing Oterm..."
             brew install oterm
+
+            mkdir -p "$(oterm --data-dir 2>/dev/null || echo ~/.local/share/oterm)" && \
+            config="$(oterm --data-dir 2>/dev/null || echo ~/.local/share/oterm)/config.json" && \
+            if [ -f "$config" ]; then
+            tmp=$(mktemp) && jq '. + {"splash-screen": false}' "$config" > "$tmp" && mv "$tmp" "$config"
+            else
+            echo '{"splash-screen": false}' > "$config"
+            fi
+
             break
             ;;
         N|n)
