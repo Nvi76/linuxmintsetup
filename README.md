@@ -1,9 +1,49 @@
+# Linux Mint Setup
+Setup and configuration script for linux mint.
 
-# Linux Mint Setup Script
-Specifically for Linux Mint
+# 1. Git Manual
+1) **Git & GitHub Setup**
 
-# 1. Shell Configs
-Fish
+After running `secure.sh`, an SSH key is generated automatically.
+If you need to do it manually:
+
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+
+2) **Add the key to GitHub**
+
+1. Print your public key:
+   ```bash
+   cat ~/.ssh/id_ed25519.pub
+   ```
+2. Copy the output
+3. Go to GitHub → **Settings** → **SSH and GPG keys** → **New SSH key**
+4. Paste the key and save
+
+3) **First-time push (new repo)**
+
+```bash
+cd ~/Projects/Scripts/linuxmintsetup
+git remote add origin git@github.com:Nvi76/linuxmintsetup.git # this is if there's no origin yet
+git init
+git remote set-url origin git@github.com:Nvi76/linuxmintsetup.git
+git add .
+git commit -m "Initial setup"
+git push -u origin main
+```
+
+4) **Subsequent pushes**
+
+```bash
+cd ~/Projects/Scripts/linuxmintsetup
+git add .
+git commit -m "description of changes"
+git push
+```
+
+# 2. Shell Configs
+**Fish**
 ```
 if status is-interactive
     set -gx ATUIN_NOBIND true
@@ -45,7 +85,7 @@ if command -v thefuck >/dev/null
 end
 ```
 
-Bash
+**Bash**
 ```
 # === apps.sh managed block - do not edit manually ===
 eval "$(atuin init bash)"
@@ -83,9 +123,9 @@ fi
 # === end of apps.sh block ===
 ```
 
-Zsh
+**Zsh**
 ```
-=== apps.sh managed block - do not edit manually ===
+# === apps.sh managed block - do not edit manually ===
 eval "$(atuin init zsh)"
 
 alias lsa="ls -a"
@@ -116,7 +156,9 @@ fi
 
 # === end of apps.sh block ===
 ```
-# 2. If ollama.service is not working properly try to run 
+
+# 2. Ollama Service Fix
+**If ollama.service is not working properly try to run:**
 ```
 sudo mkdir -p /usr/share/ollama && sudo chown ollama:ollama /usr/share/ollama
 sudo systemctl restart ollama
@@ -129,15 +171,7 @@ Aur: https://aur.archlinux.org/packages?O=0&K=%s (aurs)
 YouTube Search: https://www.youtube.com/search?q=%s (ytu)
 Nixpkg Search: https://search.nixos.org/packages?channel=25.11&query=%s (nixpkg)
 Brave Search: https://search.brave.com/search?q=%s
+Brave Search Ask: https://search.brave.com/search?q=%s
 Startpage: https://startpage.com/search?q=%s
 Ecosia: https://ecosia.org/search?q=%s
 ```
-
-# 4. Homebrew
-After installing homebrew make sure to manually copy the command that homebrew will gave you if it detects homebrew is not on path just to make sure
-```
- echo >> /home/archer/.bashrc
- echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"' >> /home/archer/.bashrc
- eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
-```
-

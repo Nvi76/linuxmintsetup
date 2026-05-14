@@ -96,6 +96,16 @@ git config --global user.email "$git_email" || exit 1
 
 echo "Git configured with name: $git_name and email: $git_email"
 
+# Generate SSH key for GitHub
+if [ ! -f "$HOME/.ssh/id_ed25519.pub" ]; then
+    mkdir -p "$HOME/.ssh"
+    ssh-keygen -t ed25519 -C "$git_email" -N "" -f "$HOME/.ssh/id_ed25519"
+    echo "SSH key generated. Add this to GitHub -> Settings -> SSH keys:"
+    cat "$HOME/.ssh/id_ed25519.pub"
+else
+    echo "SSH key already exists at ~/.ssh/id_ed25519.pub"
+fi
+
 # Cleanup
 rm -f portmaster.deb
 
