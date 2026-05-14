@@ -1,0 +1,3 @@
+# Whitelisted Folders
+whitelist ${HOME}/Downloads
+whitelist ${HOME}/Allowed

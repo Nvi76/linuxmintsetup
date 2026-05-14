@@ -1,0 +1,21 @@
+# Fix Input (Negate restrictions in chromium-common.profile)
+ignore noinput
+nodbus
+
+# IBus Specific Access
+ignore noroot
+noblacklist ${RUNUSER}/ibus
+writable-run-user
+
+# Fix Networking (Negate netfilter in chromium-common.profile)
+ignore netfilter
+net host
+
+# Allow shared memory (Required for Electron/IBus rendering)
+ignore noshm
+
+# Disable AppArmor (Suggested by brave.profile for compatibility)
+ignore apparmor
+
+# Whitelisted Folders
+whitelist ${HOME}/Allowed

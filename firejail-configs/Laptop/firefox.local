@@ -1,0 +1,8 @@
+# Whitelisted Folders
+whitelist ${HOME}/Allowed
+
+# Use the exact path shown in about:profiles
+noblacklist ${HOME}/.config/mozilla
+noblacklist ${HOME}/.cache/mozilla
+whitelist ${HOME}/.config/mozilla/firefox
+whitelist ${HOME}/.cache/mozilla/firefox
