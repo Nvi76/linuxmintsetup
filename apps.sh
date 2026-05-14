@@ -205,7 +205,7 @@ while true; do
     case $reply in
         Y|y)
             echo "Installing browser..."
-                flatpak install net.mullvad.MullvadBrowser --noninteractive
+                flatpak install flathub net.mullvad.MullvadBrowser --noninteractive
             break
             ;;
         N|n)
@@ -229,7 +229,7 @@ while true; do
     case $reply in
         Y|y)
             echo "Installing browser..."
-                flatpak install one.ablaze.floorp --noninteractive
+                flatpak install flathub one.ablaze.floorp --noninteractive
             break
             ;;
         N|n)
@@ -253,7 +253,7 @@ while true; do
     case $reply in
         Y|y)
             echo "Installing browser..."
-                flatpak install app.zen_browser.zen --noninteractive
+                flatpak install flathub app.zen_browser.zen --noninteractive
             break
             ;;
         N|n)
@@ -523,6 +523,50 @@ while true; do
     esac
 done
 
+# Educational Apps
+function edu_apps() {
+    echo "Select packages to install:"
+    echo "1) Preschool (TK)"
+    echo "2) Primary (SD)"
+    echo "3) Secondary (SMP-SMA)"
+    echo "4) Tertiary (Collage Level)"
+    echo "5) All"
+    echo -n "Enter choice (1-5): "
+    read choice
+
+    case $choice in
+        1) sudo nala install -y ubuntu-edu-preschool ;;
+        2) sudo nala install -y ubuntu-edu-primary ;;
+        3) sudo nala install -y ubuntu-edu-secondary ;;
+        4) sudo nala install -y ubuntu-edu-tertiary ;;
+        5) sudo nala install -y ubuntu-edu-preschool ubuntu-edu-primary ubuntu-edu-secondary ubuntu-edu-tertiary ;;
+        *) echo "Invalid option" ;;
+    esac
+}
+
+clear
+echo "Do you want to Educational Apps (Edubuntu)? (y/n):"
+while true; do
+    read -t 5 -p "Answer [y/n]: " reply
+    if [ -z "$reply" ]; then
+        reply="Y"
+    fi
+    case $reply in
+        Y|y)
+            echo "Installing Educational Apps..."
+            edu_apps
+            break
+            ;;
+        N|n)
+            echo "Skipping installation of Educational Apps..."
+            break
+            ;;
+        *)
+            echo "Please enter 'y' or 'n'."
+            ;;
+    esac
+done
+
 # VirtManager (GnomeBoxes)
 clear
 echo "Do you want to install VirtManager (GnomeBoxes) (y/n):"
@@ -537,7 +581,7 @@ reply="${reply,,}"
     case $reply in
         y)
             echo "Installing VirtManager..."
-                flatpak install --noninteractive org.gnome.Boxes
+                flatpak install flathub --noninteractive org.gnome.Boxes
             break
             ;;
         n)
@@ -793,10 +837,18 @@ EOF
 EOF
 
 cat > ~/.blerc << 'EOF'
-# Performance tweaks
-bleopt highlight_syntax=off
-bleopt highlight_filename=off
-bleopt complete_auto_delay=100
+# Performance-optimized ble.sh settings
+bleopt complete_auto_delay=200
+bleopt highlight_syntax=
+bleopt complete_auto_history=
+
+# History limits to reduce overhead
+HISTSIZE=5000
+HISTFILESIZE=10000
+shopt -s histappend
+
+# Visual bell
+bleopt edit_bell=vbell
 EOF
                             ;;
                         *)
