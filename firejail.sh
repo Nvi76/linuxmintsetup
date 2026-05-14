@@ -30,12 +30,12 @@ case $choice in
         mkdir -p "$HOME/.local/share/applications"  
         mkdir -p "$HOME/.mozilla/firefox"
         
-        # Copy configuration files
-        cp ~/linuxmintsetup/firejail-configs/PC/helium.profile ~/.config/firejail/helium.profile
-        cp ~/linuxmintsetup/firejail-configs/PC/brave.local ~/.config/firejail/brave.local
-        cp ~/linuxmintsetup/firejail-configs/PC/brave.local ~/.config/firejail/chromium.local
-        cp ~/linuxmintsetup/firejail-configs/PC/firefox.local ~/.config/firejail/firefox.local
-        cp ~/linuxmintsetup/firejail-configs/PC/librewolf.local ~/.config/firejail/librewolf.local
+        # Copy configuration files (Laptop-specific configs)
+        cp ~/linuxmintsetup/firejail-configs/Laptop/helium.profile ~/.config/firejail/helium.profile
+        cp ~/linuxmintsetup/firejail-configs/Laptop/brave.local ~/.config/firejail/brave.local
+        cp ~/linuxmintsetup/firejail-configs/Laptop/brave.local ~/.config/firejail/chromium.local
+        cp ~/linuxmintsetup/firejail-configs/Laptop/firefox.local ~/.config/firejail/firefox.local
+        cp ~/linuxmintsetup/firejail-configs/Laptop/librewolf.local ~/.config/firejail/librewolf.local
 
         echo "==========================================="
         echo "          Firejail Config Success          "
@@ -67,12 +67,12 @@ case $choice in
         mkdir -p "$HOME/.config/net.imput.helium"
         mkdir -p "$HOME/.cache/net.imput.helium"
         
-        # Copy configuration files
-        cp ~/linuxmintsetup/firejail-configs/Laptop/helium.profile ~/.config/firejail/helium.profile
-        cp ~/linuxmintsetup/firejail-configs/Laptop/brave.local ~/.config/firejail/brave.local
-        cp ~/linuxmintsetup/firejail-configs/Laptop/brave.local ~/.config/firejail/chromium.local
-        cp ~/linuxmintsetup/firejail-configs/Laptop/firefox.local ~/.config/firejail/firefox.local
-        cp ~/linuxmintsetup/firejail-configs/Laptop/librewolf.local ~/.config/firejail/librewolf.local
+        # Copy configuration files (PC-specific configs)
+        cp ~/linuxmintsetup/firejail-configs/PC/helium.profile ~/.config/firejail/helium.profile
+        cp ~/linuxmintsetup/firejail-configs/PC/brave.local ~/.config/firejail/brave.local
+        cp ~/linuxmintsetup/firejail-configs/PC/brave.local ~/.config/firejail/chromium.local
+        cp ~/linuxmintsetup/firejail-configs/PC/firefox.local ~/.config/firejail/firefox.local
+        cp ~/linuxmintsetup/firejail-configs/PC/librewolf.local ~/.config/firejail/librewolf.local
 
         sudo tee /etc/firejail/firecfg.d/ExcludedApps.conf > /dev/null << 'EOF'
         !libreoffice
