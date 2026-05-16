@@ -570,7 +570,7 @@ main() {
 
   if $need_install; then
     echo
-    error "Some applications are missing. Install them from apps.fish first."
+    error "Some applications are missing. Install them from apps.sh first."
     install_instructions
     exit 1
   fi
