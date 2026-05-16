@@ -1,5 +1,79 @@
 #!/usr/bin/env bash
 
+# Functions
+yn_default() {
+    local prompt="$1"
+    local confirm_msg="$2"
+    local skip_msg="$3"
+    clear
+    echo "${prompt}"
+    while true; do
+        read -t 5 -p "Answer [y/n]: " reply
+        if [ -z "$reply" ]; then
+            reply="Y"
+        fi
+        case $reply in
+            Y|y)
+                echo "${confirm_msg}"
+                return 0
+                ;;
+            N|n)
+                echo "${skip_msg}"
+                return 1
+                ;;
+            *)
+                echo "Please enter 'y' or 'n'."
+                ;;
+        esac
+    done
+}
+
+yn_second() {
+    local prompt="$1"
+    local confirm_msg="$2"
+    local skip_msg="$3"
+    clear
+    echo "${prompt}"
+    while true; do
+        read -t 5 -rp "Answer [y/n]: " reply
+        reply=${reply:-N}
+        case "$reply" in
+            [Yy])
+                echo "${confirm_msg}"
+                return 0
+                ;;
+            [Nn])
+                echo "${skip_msg}"
+                return 1
+                ;;
+            *)
+                echo "Please answer y or n."
+                ;;
+        esac
+    done
+}
+
+edu_apps() {
+    echo "Select packages to install:"
+    echo "1) Preschool (TK)"
+    echo "2) Primary (SD)"
+    echo "3) Secondary (SMP-SMA)"
+    echo "4) Tertiary (Collage Level)"
+    echo "5) All"
+    echo -n "Enter choice (1-5): "
+    read choice
+
+    case $choice in
+        1) sudo nala install -y ubuntu-edu-preschool ;;
+        2) sudo nala install -y ubuntu-edu-primary ;;
+        3) sudo nala install -y ubuntu-edu-secondary ;;
+        4) sudo nala install -y ubuntu-edu-tertiary ;;
+        5) sudo nala install -y ubuntu-edu-preschool ubuntu-edu-primary ubuntu-edu-secondary ubuntu-edu-tertiary ;;
+        *) echo "Invalid option" ;;
+    esac
+}
+
+
 # Checking
 clear
 echo "Did you installed the nvidia drivers already or are you using other gpus not needing any drivers? (y/n):"
@@ -104,167 +178,51 @@ echo "=========================================="
 timeout 2s sleep 2
 
 # Helium Browser
-clear
-echo "Do you want to install Helium? (y/n):"
+if yn_default "Do you want to install Helium? (y/n):" "Installing browser..." "Skipping browser installation."; then
 
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing browser..."
+    # Add Helium's signing public key
+    curl -fsSL https://raw.githubusercontent.com/imputnet/helium-linux/main/pubkey.asc | sudo gpg --dearmor -o /usr/share/keyrings/helium.gpg
 
-            # Add Helium's signing public key
-            curl -fsSL https://raw.githubusercontent.com/imputnet/helium-linux/main/pubkey.asc | sudo gpg --dearmor -o /usr/share/keyrings/helium.gpg
+    # Add Helium's repo
+    echo "deb [signed-by=/usr/share/keyrings/helium.gpg] https://pkg.helium.computer/deb stable main" | sudo tee /etc/apt/sources.list.d/helium.list
 
-            # Add Helium's repo
-            echo "deb [signed-by=/usr/share/keyrings/helium.gpg] https://pkg.helium.computer/deb stable main" | sudo tee /etc/apt/sources.list.d/helium.list
-
-            # Install Helium browser
-            sudo nala update && sudo nala install -y helium-bin
-
-            break
-            ;;
-        N|n)
-            echo "Skipping browser installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+    # Install Helium browser
+    sudo nala update && sudo nala install -y helium-bin
+fi
 
 # Brave Browser
-clear
-echo "Do you want to install Brave Browser? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing browser..."
-                # Import Brave Browser's Repo
-                sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-                sudo curl -fsSLo /etc/apt/sources.list.d/brave-browser-release.sources https://brave-browser-apt-release.s3.brave.com/brave-browser.sources
+if yn_default "Do you want to install Brave Browser? (y/n):" "Installing browser..." "Skipping browser installation."; then
+    # Import Brave Browser's Repo
+    sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+    sudo curl -fsSLo /etc/apt/sources.list.d/brave-browser-release.sources https://brave-browser-apt-release.s3.brave.com/brave-browser.sources
 
-                sudo nala update
-                sudo nala install -y brave-browser
-            break
-            ;;
-        N|n)
-            echo "Skipping browser installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+    sudo nala update
+    sudo nala install -y brave-browser
+fi
 
 # Librewolf
-clear
-echo "Do you want to install Librewolf? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing browser..."
-            # Enable Librewolf's repo
-            sudo extrepo update librewolf || exit 1
+if yn_default "Do you want to install Librewolf? (y/n):" "Installing browser..." "Skipping browser installation."; then
+    # Enable Librewolf's repo
+    sudo extrepo update librewolf || exit 1
 
-            sudo nala update
-            sudo nala install -y librewolf
-            break
-            ;;
-        N|n)
-            echo "Skipping browser installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+    sudo nala update
+    sudo nala install -y librewolf
+fi
 
 # Mullvad Browser
-clear
-echo "Do you want to install Mullvad Browser? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing browser..."
-                flatpak install flathub net.mullvad.MullvadBrowser --noninteractive
-            break
-            ;;
-        N|n)
-            echo "Skipping browser installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+if yn_default "Do you want to install Mullvad Browser? (y/n):" "Installing browser..." "Skipping browser installation."; then
+    flatpak install flathub net.mullvad.MullvadBrowser --noninteractive
+fi
 
 # Floorp Browser
-clear
-echo "Do you want to install Floorp? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing browser..."
-                flatpak install flathub one.ablaze.floorp --noninteractive
-            break
-            ;;
-        N|n)
-            echo "Skipping browser installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+if yn_default "Do you want to install Floorp? (y/n):" "Installing browser..." "Skipping browser installation."; then
+    flatpak install flathub one.ablaze.floorp --noninteractive
+fi
 
 # Zen Browser
-clear
-echo "Do you want to install Zen Browser? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing browser..."
-                flatpak install flathub app.zen_browser.zen --noninteractive
-            break
-            ;;
-        N|n)
-            echo "Skipping browser installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+if yn_default "Do you want to install Zen Browser? (y/n):" "Installing browser..." "Skipping browser installation."; then
+    flatpak install flathub app.zen_browser.zen --noninteractive
+fi
 
 clear
 echo "============================================="
@@ -273,40 +231,17 @@ echo "============================================="
 timeout 2s sleep 2
 
 # Install Additional
-clear
-echo "Do you want to install Additional tools? (Might not be needed for desktop usage) (y/n)"
+if yn_second "Do you want to install Additional tools? (Might not be needed for desktop usage) (y/n)" "Installing tools..." "Skipping installation."; then
+    wget https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.8_all.deb
+    sudo dpkg -i protonvpn-stable-release_1.0.8_all.deb
 
-while true; do
-    read -t 5 -rp "Answer [y/n]: " reply
-    reply=${reply:-N}
+    sudo add-apt-repository -y ppa:micahflee/ppa
+    sudo nala install -y proton-vpn-cli torbrowser-launcher
+    sudo systemctl start proton-vpn-daemon.service
 
-    case "$reply" in
-        [Yy])
-
-            echo "Installing tools..."
-            wget https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.8_all.deb
-            sudo dpkg -i protonvpn-stable-release_1.0.8_all.deb
-
-            sudo add-apt-repository -y ppa:micahflee/ppa
-            sudo nala install -y proton-vpn-cli torbrowser-launcher
-            sudo systemctl start proton-vpn-daemon.service
-
-            sudo protonvpn init
-            protonvpn connect --fastest > /dev/null
-
-            break
-            ;;
-
-        [Nn])
-            echo "Skipping installation."
-            break
-            ;;
-
-        *)
-            echo "Please answer y or n."
-            ;;
-    esac
-done
+    sudo protonvpn init
+    protonvpn connect --fastest > /dev/null
+fi
 
 # Additionals2
 clear
@@ -320,279 +255,119 @@ install_browser() {
     sudo nala install -y "$browser"
 }
 
-echo "Do you want to install Additional tool? (2) (y/n)"
+if yn_second "Do you want to install Additional tool? (2) (y/n)" "Installing tools..." "Skipping installation."; then
+    sudo add-apt-repository -y ppa:i2p-maintainers/i2p
 
-while true; do
-    read -t 5 -rp "Answer [y/n]: " reply
-    reply=${reply:-N}
+    sudo nala update
+    sudo nala install -y i2pd curl
 
-    case "$reply" in
-        [Yy])
+    sudo systemctl start i2pd > /dev/null 2>&1
 
-            echo "Installing tools..."
-            sudo add-apt-repository -y ppa:i2p-maintainers/i2p
+    until curl -s http://127.0.0.1:7657 > /dev/null; do
+        sleep 2
+    done
 
-            sudo nala update
-            sudo nala install -y i2pd curl
+    found=false
 
-            sudo systemctl start i2pd > /dev/null 2>&1
+    for browser in "${BROWSERS[@]}"; do
+        if command -v "$browser" &>/dev/null; then
+            echo "Launching $browser..."
+            "$browser" "$URL" &
+            found=true
+        fi
+    done
 
-            until curl -s http://127.0.0.1:7657 > /dev/null; do
-                sleep 2
-            done
+    if ! $found; then
+        echo "No supported browser found."
+        echo "1) firefox"
+        echo "2) chromium-browser"
 
-            found=false
+        read -rp "Choice [1-2]: " choice
 
-            for browser in "${BROWSERS[@]}"; do
-                if command -v "$browser" &>/dev/null; then
-                    echo "Launching $browser..."
-                    "$browser" "$URL" &
-                    found=true
-                fi
-            done
-
-            if ! $found; then
-                echo "No supported browser found."
-                echo "1) firefox"
-                echo "2) chromium-browser"
-
-                read -rp "Choice [1-2]: " choice
-
-                case "$choice" in
-                    1) install_browser firefox ;;
-                    2) install_browser chromium-browser ;;
-                    *) echo "Invalid option" ;;
-                esac
-            fi
-
-            break
-            ;;
-
-        [Nn])
-            echo "Skipping installation."
-            break
-            ;;
-
-        *)
-            echo "Please answer y or n."
-            ;;
-    esac
-done
+        case "$choice" in
+            1) install_browser firefox ;;
+            2) install_browser chromium-browser ;;
+            *) echo "Invalid option" ;;
+        esac
+    fi
+fi
 
 # Game Dev
-clear
-echo "Do you want to install GameDev Apps? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            gamedev_dir=~/linuxmintsetup
-            mkdir -p "$gamedev_dir"
+if yn_default "Do you want to install GameDev Apps? (y/n):" "Installing Godot & libresprite..." "Skipping GameDev Apps installation."; then
+    gamedev_dir=~/linuxmintsetup
+    mkdir -p "$gamedev_dir"
 
-            echo "Installing Godot..."
-            curl -fL \
-                https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_linux.x86_64.zip \
-                -o "$gamedev_dir/Godot_v4.6.2-stable_linux.x86_64.zip" || exit 1
+    echo "Installing Godot..."
+    curl -fL \
+        https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_linux.x86_64.zip \
+        -o "$gamedev_dir/Godot_v4.6.2-stable_linux.x86_64.zip" || exit 1
 
-            unzip -o "$gamedev_dir/Godot_v4.6.2-stable_linux.x86_64.zip" -d "$gamedev_dir"
+    unzip -o "$gamedev_dir/Godot_v4.6.2-stable_linux.x86_64.zip" -d "$gamedev_dir"
 
-            echo "Installing LDtk..."
-            curl -fL \
-                https://github.com/deepnight/ldtk/releases/download/v1.5.3/LDtk-1.5.3-linux.zip \
-                -o "$gamedev_dir/LDtk.zip" || exit 1
+    echo "Installing LDtk..."
+    curl -fL \
+        https://github.com/deepnight/ldtk/releases/download/v1.5.3/LDtk-1.5.3-linux.zip \
+        -o "$gamedev_dir/LDtk.zip" || exit 1
 
-            unzip -o "$gamedev_dir/LDtk.zip" -d "$gamedev_dir"
-            flatpak install flathub it.mijorus.gearlever --noninteractive
-            flatpak run it.mijorus.gearlever "$gamedev_dir"/*.AppImage
+    unzip -o "$gamedev_dir/LDtk.zip" -d "$gamedev_dir"
+    flatpak install flathub it.mijorus.gearlever --noninteractive
+    flatpak run it.mijorus.gearlever "$gamedev_dir"/*.AppImage
 
-            echo "Installing Libresprite..."
-            curl -fL \
-                https://github.com/LibreSprite/LibreSprite/releases/download/v24.08.0/libresprite-development-linux-x86_64.zip \
-                -o "$gamedev_dir/libresprite.zip" || exit 1
+    echo "Installing Libresprite..."
+    curl -fL \
+        https://github.com/LibreSprite/LibreSprite/releases/download/v24.08.0/libresprite-development-linux-x86_64.zip \
+        -o "$gamedev_dir/libresprite.zip" || exit 1
 
-            unzip -o "$gamedev_dir/libresprite.zip" -d "$gamedev_dir"
-            flatpak run it.mijorus.gearlever "$gamedev_dir"/LibreSprite*.AppImage
+    unzip -o "$gamedev_dir/libresprite.zip" -d "$gamedev_dir"
+    flatpak run it.mijorus.gearlever "$gamedev_dir"/LibreSprite*.AppImage
 
-            trash-put "$gamedev_dir/Godot_v4.6.2-stable_linux.x86_64.zip"
-            trash-put "$gamedev_dir/LDtk.zip"
-            trash-put "$gamedev_dir/libresprite.zip"
-            break
-            ;;
-        N|n)
-            echo "Skipping GameDev Apps installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+    trash-put "$gamedev_dir/Godot_v4.6.2-stable_linux.x86_64.zip"
+    trash-put "$gamedev_dir/LDtk.zip"
+    trash-put "$gamedev_dir/libresprite.zip"
+fi
 
 # Games
-clear
-echo "Do you want to install Games aswell? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing Games..."
-            flatpak install flathub org.luanti.luanti info.beyondallreason.bar org.openttd.OpenTTD net.openra.OpenRA net.wz2100.wz2100 --noninteractive
-            break
-            ;;
-        N|n)
-            echo "Skipping installation of games."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+if yn_default "Do you want to install Games aswell? (y/n):" "Installing Games..." "Skipping installation of games."; then
+    flatpak install flathub org.luanti.luanti info.beyondallreason.bar org.openttd.OpenTTD net.openra.OpenRA net.wz2100.wz2100 --noninteractive
+fi
 
 # Code
-clear
-echo "Do you want to install VSCode (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing VSCode..."
-                # Download VS Code
-                curl -fL \
-                    https://vscode.download.prss.microsoft.com/dbazure/download/stable/bdd88df003631aaa0bcbe057cb0a940b80a476fa/code_1.109.0-1770171879_amd64.deb \
-                    -o vscode.deb || exit 1
+if yn_default "Do you want to install VSCode (y/n):" "Installing VSCode..." "Skipping VSCode installation."; then
+    # Download VS Code
+    curl -fL \
+        https://vscode.download.prss.microsoft.com/dbazure/download/stable/bdd88df003631aaa0bcbe057cb0a940b80a476fa/code_1.109.0-1770171879_amd64.deb \
+        -o vscode.deb || exit 1
 
-                sudo nala install ./vscode.deb -y || sudo apt -f install -y
+    sudo nala install ./vscode.deb -y || sudo apt -f install -y
 
-                # Cleanup
-                trash-put vscode.deb
-            break
-            ;;
-        N|n)
-            echo "Skipping VSCode installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+    # Cleanup
+    trash-put vscode.deb
+fi
 
 # Codium
-clear
-echo "Do you want to install VSCodium (y/n):"
-while true; do
-    reply=""
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing VSCodium..."
+if yn_default "Do you want to install VSCodium (y/n):" "Installing VSCodium..." "Skipping VSCodium installation."; then
 
-            # Import VSCodium keyring
-            wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg \
-                | gpg --dearmor \
-                | sudo dd of=/usr/share/keyrings/vscodium-archive-keyring.gpg || exit 1
+    # Import VSCodium keyring
+    wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg \
+        | gpg --dearmor \
+        | sudo dd of=/usr/share/keyrings/vscodium-archive-keyring.gpg || exit 1
 
-            echo -e 'Types: deb\nURIs: https://download.vscodium.com/debs\nSuites: vscodium\nComponents: main\nArchitectures: amd64 arm64\nSigned-by: /usr/share/keyrings/vscodium-archive-keyring.gpg' \
-                | sudo tee /etc/apt/sources.list.d/vscodium.sources
+    echo -e 'Types: deb\nURIs: https://download.vscodium.com/debs\nSuites: vscodium\nComponents: main\nArchitectures: amd64 arm64\nSigned-by: /usr/share/keyrings/vscodium-archive-keyring.gpg' \
+        | sudo tee /etc/apt/sources.list.d/vscodium.sources
 
-            sudo nala update
-            sudo nala install -y codium
-
-            break
-            ;;
-        N|n)
-            echo "Skipping VSCodium installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+    sudo nala update
+    sudo nala install -y codium
+fi
 
 # Educational Apps
-function edu_apps() {
-    echo "Select packages to install:"
-    echo "1) Preschool (TK)"
-    echo "2) Primary (SD)"
-    echo "3) Secondary (SMP-SMA)"
-    echo "4) Tertiary (Collage Level)"
-    echo "5) All"
-    echo -n "Enter choice (1-5): "
-    read choice
-
-    case $choice in
-        1) sudo nala install -y ubuntu-edu-preschool ;;
-        2) sudo nala install -y ubuntu-edu-primary ;;
-        3) sudo nala install -y ubuntu-edu-secondary ;;
-        4) sudo nala install -y ubuntu-edu-tertiary ;;
-        5) sudo nala install -y ubuntu-edu-preschool ubuntu-edu-primary ubuntu-edu-secondary ubuntu-edu-tertiary ;;
-        *) echo "Invalid option" ;;
-    esac
-}
-
-clear
-echo "Do you want to Educational Apps (Edubuntu)? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing Educational Apps..."
-            edu_apps
-            break
-            ;;
-        N|n)
-            echo "Skipping installation of Educational Apps..."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+if yn_default "Do you want to Educational Apps (Edubuntu)? (y/n):" "Installing Educational Apps..." "Skipping installation of Educational Apps..."; then
+    edu_apps
+fi
 
 # VirtManager (GnomeBoxes)
-clear
-echo "Do you want to install VirtManager (GnomeBoxes) (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-
-reply="${reply,,}"
-
-    case $reply in
-        y)
-            echo "Installing VirtManager..."
-                flatpak install flathub --noninteractive org.gnome.Boxes
-            break
-            ;;
-        n)
-            echo "Skipping VirtManager installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+if yn_default "Do you want to install VirtManager (GnomeBoxes) (y/n):" "Installing VirtManager..." "Skipping VirtManager installation."; then
+    flatpak install flathub --noninteractive org.gnome.Boxes
+fi
 
 # AI Tools
 clear
@@ -602,115 +377,38 @@ echo "=============================="
 timeout 2s sleep 2
 
 # Ollama
-clear
-echo "Do you want to install Ollama? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing Dependencies"
-            sudo nala install -y nvidia-cuda-toolkit            
-            
-            echo "Installing Ollama..."
-            curl -fsSL https://ollama.com/install.sh | sh
+if yn_default "Do you want to install Ollama? (y/n):" "Installing Ollama..." "Skipping Ollama installation."; then
+    echo "Installing Dependencies"
+    sudo nala install -y nvidia-cuda-toolkit            
 
-            echo "Enabling system service"
-            sudo systemctl enable ollama
-            break
-            ;;
-        N|n)
-            echo "Skipping Ollama installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+    curl -fsSL https://ollama.com/install.sh | sh
+
+    echo "Enabling system service"
+    sudo systemctl enable ollama
+fi
 
 # OpenCode
-clear
-echo "Do you want to install OpenCode? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing OpenCode..."
-            curl -fsSL https://opencode.ai/install | bash
-            break
-            ;;
-        N|n)
-            echo "Skipping OpenCode installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+if yn_default "Do you want to install OpenCode? (y/n):" "Installing OpenCode..." "Skipping OpenCode installation."; then
+    curl -fsSL https://opencode.ai/install | bash
+fi
 
 # Oterm
-clear
-echo "Do you want to install Oterm? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
+if yn_default "Do you want to install Oterm? (y/n):" "Installing Oterm..." "Skipping Oterm installation."; then
+    brew install oterm
+
+    mkdir -p "$(oterm --data-dir 2>/dev/null || echo ~/.local/share/oterm)" && \
+    config="$(oterm --data-dir 2>/dev/null || echo ~/.local/share/oterm)/config.json" && \
+    if [ -f "$config" ]; then
+    tmp=$(mktemp) && jq '. + {"splash-screen": false}' "$config" > "$tmp" && mv "$tmp" "$config"
+    else
+    echo '{"splash-screen": false}' > "$config"
     fi
-    case $reply in
-        Y|y)
-            echo "Installing Oterm..."
-            brew install oterm
-
-            mkdir -p "$(oterm --data-dir 2>/dev/null || echo ~/.local/share/oterm)" && \
-            config="$(oterm --data-dir 2>/dev/null || echo ~/.local/share/oterm)/config.json" && \
-            if [ -f "$config" ]; then
-            tmp=$(mktemp) && jq '. + {"splash-screen": false}' "$config" > "$tmp" && mv "$tmp" "$config"
-            else
-            echo '{"splash-screen": false}' > "$config"
-            fi
-
-            break
-            ;;
-        N|n)
-            echo "Skipping Oterm installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+fi
 
 # Alpaca
-clear
-echo "Do you want to install Alpaca? (y/n):"
-while true; do
-    read -t 5 -p "Answer [y/n]: " reply
-    if [ -z "$reply" ]; then
-        reply="Y"
-    fi
-    case $reply in
-        Y|y)
-            echo "Installing Alpaca..."
-            flatpak install flathub com.jeffser.Alpaca --noninteractive
-            break
-            ;;
-        N|n)
-            echo "Skipping Alpaca installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+if yn_default "Do you want to install Alpaca? (y/n):" "Installing Alpaca..." "Skipping Alpaca installation."; then
+    flatpak install flathub com.jeffser.Alpaca --noninteractive
+fi
 
 # Run AI configuration
 has_ollama=$(command -v ollama)
@@ -804,7 +502,9 @@ configure_shells() {
         sudo nala install -y bash-completion
 
         # Install Atuin
-        curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh || exit 1
+        if ! command -v atuin &>/dev/null; then
+            curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh || exit 1
+        fi
 
         # ble.sh
         clear
@@ -886,46 +586,36 @@ alias rkscan="sudo rkhunter --check --sk"
 alias kate="flatpak run org.kde.kate"
 
 # Extra functions
-function gitpush_installscript() {
+gitpush_installscript() {
     cd ~/Projects/Scripts/linuxmintsetup && git add . && git commit -m "New changes" && git push -u origin main
     cd ~/Projects/Scripts/fedorasetup && git add . && git commit -m "New changes" && git push -u origin main
     cd ~/Projects/Scripts/voidsetup && git add . && git commit -m "New changes" && git push -u origin main
     cd ~/Projects/Scripts/cachysetup && git add . && git commit -m "New changes" && git push -u origin main
-    cd ~/Projects/Scripts/nixsetup && git add . && git commit -m "New changes" && git push -u origin main
 }
 
-# Add your other functions here
+# Copy Ai models to folder
+ollama_model() {
+  local model_name=$1
 
-blesh_optimize() {
-    local blesh_dir="${XDG_DATA_HOME:-$HOME/.local/share}/blesh"
-    local blerc="${XDG_CONFIG_HOME:-$HOME/.config}/blesh/init.sh"
+  if [ -z "$model_name" ]; then
+    echo "Usage: copy_ollama_model <model-name>"
+    return 1
+  fi
 
-    if [[ ! -f "$blesh_dir/ble.sh" ]]; then
-        echo "Installing ble.sh..."
-        git clone --recursive --depth 1 --shallow-submodules "https://github.com/akinomyoga/ble.sh.git" "$blesh_dir"
-        make -C "$blesh_dir" install PREFIX="${XDG_DATA_HOME:-$HOME}/.local" strip_comment=yes
-        mkdir -p "$(dirname "$blerc")"
-    fi
+  ollama export "$model_name" "./${model_name//:/_}.bin"
+  echo "Model '$model_name' exported to $(pwd)/${model_name//:/_}.bin"
+}
 
-    cat > "$blerc" << 'EOF'
-# Performance-optimized ble.sh settings
-bleopt complete_auto_delay=200
-bleopt highlight_syntax=
-bleopt complete_auto_history=
+ollama_models_all() {
+  local export_dir="./ollama-backup"
+  mkdir -p "$export_dir"
 
-# History limits to reduce overhead
-HISTSIZE=5000
-HISTFILESIZE=10000
-shopt -s histappend
+  ollama list --format json | jq -r '.[].name' | while read model; do
+    echo "Exporting $model..."
+    ollama export "$model" "$export_dir/${model//:/_}.bin"
+  done
 
-# Visual bell
-bleopt edit_bell=vbell
-EOF
-
-    if [[ $- == *i* ]] && [[ ! ${BLE_VERSION:-} ]]; then
-        source "$blesh_dir/ble.sh" --attach=auto
-        echo "ble.sh installed and optimized! Restart shell or run 'ble-attach'."
-    fi
+  echo "All models exported to $export_dir"
 }
 
 # Homebrew
@@ -944,6 +634,7 @@ if command -v opencode &>/dev/null; then
     source <(opencode completion bash 2>/dev/null) 2>/dev/null || true
 fi
 
+# === end of apps.sh block ===
 BASHEOF
         echo "Bash configured at ~/.bashrc"
         timeout 1s sleep 1
@@ -979,7 +670,9 @@ BASHEOF
         fi
         
         # Install Atuin
-        curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh || exit 1
+        if ! command -v atuin &>/dev/null; then
+            curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh || exit 1
+        fi
 
             grep -q "=== apps.sh managed block" "$HOME/.zshrc" 2>/dev/null || cat >> "$HOME/.zshrc" << 'ZSHEOF'
 # === apps.sh managed block - do not edit manually ===
@@ -999,15 +692,37 @@ alias rkscan="sudo rkhunter --check --sk"
 alias kate="flatpak run org.kde.kate"
 
 # Extra functions
-function gitpush_installscript() {
+gitpush_installscript() {
     cd ~/Projects/Scripts/linuxmintsetup && git add . && git commit -m "New changes" && git push -u origin main
     cd ~/Projects/Scripts/fedorasetup && git add . && git commit -m "New changes" && git push -u origin main
     cd ~/Projects/Scripts/voidsetup && git add . && git commit -m "New changes" && git push -u origin main
     cd ~/Projects/Scripts/cachysetup && git add . && git commit -m "New changes" && git push -u origin main
-    cd ~/Projects/Scripts/nixsetup && git add . && git commit -m "New changes" && git push -u origin main
 }
 
-# Add your other functions here
+# Copy Ai models to folder
+ollama_model() {
+  local model_name=$1
+
+  if [ -z "$model_name" ]; then
+    echo "Usage: copy_ollama_model <model-name>"
+    return 1
+  fi
+
+  ollama export "$model_name" "./${model_name//:/_}.bin"
+  echo "Model '$model_name' exported to $(pwd)/${model_name//:/_}.bin"
+}
+
+ollama_models_all() {
+  local export_dir="./ollama-backup"
+  mkdir -p "$export_dir"
+
+  ollama list --format json | jq -r '.[].name' | while read model; do
+    echo "Exporting $model..."
+    ollama export "$model" "$export_dir/${model//:/_}.bin"
+  done
+
+  echo "All models exported to $export_dir"
+}
 
 # Homebrew
 if [ -f /home/linuxbrew/.linuxbrew/bin/brew ]; then
@@ -1043,7 +758,9 @@ ZSHEOF
         fi
 
         # Install Atuin
-        curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh || exit 1
+        if ! command -v atuin &>/dev/null; then
+            curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh || exit 1
+        fi
 
         # Configure fish
         FISH_CONFIG_DIR="$HOME/.config/fish"
@@ -1086,10 +803,32 @@ function gitpush_installscript
     cd ~/Projects/Scripts/fedorasetup && git add . && git commit -m "New changes" && git push -u origin main
     cd ~/Projects/Scripts/voidsetup && git add . && git commit -m "New changes" && git push -u origin main
     cd ~/Projects/Scripts/cachysetup && git add . && git commit -m "New changes" && git push -u origin main
-    cd ~/Projects/Scripts/nixsetup && git add . && git commit -m "New changes" && git push -u origin main
 end
 
-# Add your other functions here
+# Copy Ai models to folder
+function ollama_model
+    local model_name=$1
+
+    if [ -z "$model_name" ]; then
+        echo "Usage: copy_ollama_model <model-name>"
+        return 1
+    fi
+
+    ollama export "$model_name" "./${model_name//:/_}.bin"
+    echo "Model '$model_name' exported to $(pwd)/${model_name//:/_}.bin"
+end
+
+function ollama_models_all
+    local export_dir="./ollama-backup"
+    mkdir -p "$export_dir"
+
+    ollama list --format json | jq -r '.[].name' | while read model; do
+        echo "Exporting $model..."
+        ollama export "$model" "$export_dir/${model//:/_}.bin"
+    done
+
+    echo "All models exported to $export_dir"
+end
 
 # Homebrew
 if test -f /home/linuxbrew/.linuxbrew/bin/brew
@@ -1100,7 +839,6 @@ end
 if command -v thefuck >/dev/null
     thefuck --alias | source
 end
-
 FISHEOF
         echo "Fish configured at $FISH_CONFIG_FILE"
         timeout 1s sleep 1
