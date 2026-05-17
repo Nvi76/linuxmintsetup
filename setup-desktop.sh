@@ -95,7 +95,7 @@ fi
 # Librewolf
 if yn_default "Do you want to install Librewolf? (y/n):" "Installing browser..." "Skipping browser installation."; then
     # Enable Librewolf's repo
-    sudo extrepo update librewolf || exit 1
+    sudo extrepo enable librewolf || exit 1
 
     sudo nala update
     sudo nala install -y librewolf
