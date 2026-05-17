@@ -9,7 +9,7 @@ chmod +x updater.sh removeconf.sh setup-desktop.sh ai_confs.sh
 
 # Backup hosts & Copy file
 sudo cp /etc/hosts "$HOME/linuxmintsetup/hosts.backup"
-cp ~/linuxmintsetup/updater.sh ~/.updater.sh
+cp  ~/linuxmintsetup/updater.sh ~/.updater.sh  || exit 1
 
 # ===============
 #    Security
