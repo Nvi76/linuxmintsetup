@@ -8,68 +8,35 @@ update_system() { sudo nala full-upgrade -y; }
 enable_svc()    { sudo systemctl enable --now "$@"; }
 
 # == UI helpers ==
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
-info()  { echo -e "${YELLOW}➜ $1${NC}"; }
-ok()    { echo -e "${GREEN}✓ $1${NC}"; }
-err()   { echo -e "${RED}✗ $1${NC}"; }
+RED='\033[91m'; GREEN="\e[38;2;85;207;62m"; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
+info()  { echo -e "${YELLOW}=> $1${NC}"; }
+ok()    { echo -e "${GREEN}=> $1${NC}"; }
+err()   { echo -e "${RED}=> $1${NC}"; }
+header(){ echo; echo -e "${GREEN}══ $1 ══${NC}"; }
 
 pick() {
     local prompt="$1" min="$2" max="$3"
     while true; do
         read -rp "$prompt " choice
         [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= min && choice <= max )) && echo "$choice" && return
-        echo "Enter a number $min-$max."
+        err "Enter a number $min-$max."
     done
 }
 
-yn_default() {
-    local prompt="$1"
-    local confirm_msg="$2"
-    local skip_msg="$3"
-    clear
-    echo "${prompt}"
+yn() {
+    local prompt="${1:-Continue?}" default="${2:-Y}"
+    local timeout=5
+    local reply
     while true; do
-        read -t 5 -p "Answer [y/n]: " reply
-        if [ -z "$reply" ]; then
-            reply="Y"
+        if ! read -r -t "$timeout" -rp "$prompt [y/n] (default $default in ${timeout}s): " reply; then
+            echo
+            [[ "$default" == [Yy] ]] && return 0 || return 1
         fi
-        case $reply in
-            Y|y)
-                echo "${confirm_msg}"
-                return 0
-                ;;
-            N|n)
-                echo "${skip_msg}"
-                return 1
-                ;;
-            *)
-                echo "Please enter 'y' or 'n'."
-                ;;
-        esac
-    done
-}
 
-yn_second() {
-    local prompt="$1"
-    local confirm_msg="$2"
-    local skip_msg="$3"
-    clear
-    echo "${prompt}"
-    while true; do
-        read -t 5 -rp "Answer [y/n]: " reply
-        reply=${reply:-N}
-        case "$reply" in
-            [Yy])
-                echo "${confirm_msg}"
-                return 0
-                ;;
-            [Nn])
-                echo "${skip_msg}"
-                return 1
-                ;;
-            *)
-                echo "Please answer y or n."
-                ;;
+        case "${reply,,}" in
+            y|yes) return 0 ;;
+            n|no)  return 1 ;;
+            *) err "Please enter y or n." ;;
         esac
     done
 }
@@ -90,7 +57,7 @@ edu_apps() {
         3) sudo nala install -y ubuntu-edu-secondary ;;
         4) sudo nala install -y ubuntu-edu-tertiary ;;
         5) sudo nala install -y ubuntu-edu-preschool ubuntu-edu-primary ubuntu-edu-secondary ubuntu-edu-tertiary ;;
-        *) echo "Invalid option" ;;
+        *) err "Invalid option" ;;
     esac
 }
 
@@ -98,16 +65,15 @@ edu_apps() {
 firejail_install() {
 
 clear
-echo "================================================="
-echo "           Setup & Config Firejail?"
-echo "================================================="
+header "Install & Config Firejail?"
 echo "Do you want to install & config Firejail? (Recommended) WARNING will make system more secure but a bit harder to use (Still works though)"
 echo "1) Yes, Setup Firejail (Laptop)"
 echo "2) Yes, Setup Firejail (PC)"
 echo "3) No, Don't Setup Firejail"
 
-# Use ANSI escape codes for colored prompt
-read -p $'\e[32mEnter choice [1-3]: \e[0m' choice
+# Use pick() to force a valid response between 1 and 3
+# Note: Passed the green ANSI escape color codes directly into the function call
+choice=$(pick $'\e[32mEnter choice [1-3]:\e[0m' 1 3)
 
 case $choice in
     '1')
@@ -171,16 +137,18 @@ case $choice in
         cp ~/linuxmintsetup/firejail-configs/PC/librewolf.local ~/.config/firejail/librewolf.local
 
         sudo tee /etc/firejail/firecfg.d/ExcludedApps.conf > /dev/null << 'EOF'
-        !libreoffice
-        !libreoffice-startcenter
-        !org.libreoffice.LibreOffice
-        !libreoffice-calc
-        !libreoffice-writer
-        !libreoffice-impress
-        !libreoffice-draw
-        !libreoffice-base
-        !libreoffice-math
+!libreoffice
+!libreoffice-startcenter
+!org.libreoffice.LibreOffice
+!libreoffice-calc
+!libreoffice-writer
+!libreoffice-impress
+!libreoffice-draw
+!libreoffice-base
+!libreoffice-math
 EOF
+
+        info "Excluded Libreoffice"
 
         echo "==========================================="
         echo "          Firejail Config Success          "
@@ -213,12 +181,10 @@ esac
 configure_bash() {
 
     clear
-    echo "================================================="
-    echo "               Configuring Bash"
-    echo "================================================="
+    header "Configuring Bash"
 
     # bash-completion
-    echo "Installing bash-completion..."
+    info "Installing bash-completion..."
     sudo nala install -y bash-completion
 
     # Install Atuin
@@ -279,7 +245,10 @@ EOF
         esac
     done
 
-grep -q "=== apps.sh managed block" "$HOME/.bashrc" 2>/dev/null || cat >> "$HOME/.bashrc" << 'BASHEOF'
+    # Clear pre-existing managed sections using a quick pass of sed
+    sudo sed -i '/^# === managed block - do not edit ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.bashrc" 2>/dev/null || true
+
+    grep -q "=== apps.sh managed block" "$HOME/.bashrc" 2>/dev/null || cat >> "$HOME/.bashrc" << 'BASHEOF'
 # === apps.sh managed block - do not edit manually ===
 eval "$(atuin init bash)"
 
@@ -357,18 +326,17 @@ fi
 
 # === end of apps.sh block ===
 BASHEOF
-    echo "Bash configured at ~/.bashrc"
+    ok "Bash configured at ~/.bashrc"
     sleep 1
 }
 
 configure_zsh() {
 
     clear
-    echo "================================================="
-    echo "               Configuring Zsh"
-    echo "================================================="
+    header "Configuring Zsh..."
 
-    # Install zsh
+    # Install Zsh
+    info "Installing Zsh"
     sudo nala install -y zsh
 
     # Install Oh My Zsh
@@ -395,6 +363,9 @@ configure_zsh() {
     if ! command -v atuin &>/dev/null; then
         curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh || exit 1
     fi
+
+    # Clear pre-existing managed sections using a quick pass of sed
+    sudo sed -i '/^# === managed block - do not edit ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.zshrc" 2>/dev/null || true
 
     grep -q "=== apps.sh managed block" "$HOME/.zshrc" 2>/dev/null || cat >> "$HOME/.zshrc" << 'ZSHEOF'
 # === apps.sh managed block - do not edit manually ===
@@ -473,16 +444,14 @@ fi
 
 # === end of apps.sh block ===
 ZSHEOF
-    echo "Zsh configured at ~/.zshrc"
+    ok "Zsh configured at ~/.zshrc"
     sleep 1
 }
 
 configure_fish() {
 
     clear
-    echo "================================================="
-    echo "                Configuring Fish"
-    echo "================================================="
+    header "Configuring Fish..."
 
     # Install fish if not present
     if ! command -v fish &>/dev/null; then
@@ -498,6 +467,9 @@ configure_fish() {
     FISH_CONFIG_DIR="$HOME/.config/fish"
     FISH_CONFIG_FILE="$FISH_CONFIG_DIR/config.fish"
     mkdir -p "$FISH_CONFIG_DIR"
+
+    # Clear pre-existing managed sections using a quick pass of sed
+    sudo sed -i '/^# === managed block - do not edit ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.config/fish/config.fish" 2>/dev/null || true
 
         cat > "$FISH_CONFIG_FILE" << 'FISHEOF'
 if status is-interactive
@@ -625,6 +597,6 @@ if command -v thefuck >/dev/null
     thefuck --alias | source
 end
 FISHEOF
-    echo "Fish configured at $FISH_CONFIG_FILE"
+    ok "Fish configured at $FISH_CONFIG_FILE"
     sleep 1
 }

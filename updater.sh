@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# UI helpers
+RED='\033[0;31m'; GREEN="\e[38;2;85;207;62m"; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
+info()  { echo -e "${YELLOW}➜ $1${NC}"; }
+ok()    { echo -e "${GREEN}✓ $1${NC}"; }
+err()   { echo -e "${RED}✗ $1${NC}"; }
+header(){ echo; echo -e "${GREEN}══ $1 ══${NC}"; }
+
 # Update ClamAV & Rkhunter
 sudo systemctl stop clamav-freshclam || exit 1
 sudo freshclam || exit 1
@@ -15,7 +22,7 @@ sudo nala full-upgrade -y || exit 1
 # AI tools
 
         # Update Ollama
-        echo "Checking for Ollama updates..."
+        info "Checking for Ollama updates..."
         current_ollama=$(ollama -v 2>/dev/null | awk '{print $NF}' | sed 's/^v//')
         latest_ollama=$(curl -sL https://api.github.com/repos/ollama/ollama/releases/latest | grep -oP '"tag_name": "v\K[^"]*')
 
@@ -27,7 +34,7 @@ sudo nala full-upgrade -y || exit 1
         fi
 
         # Update OpenCode
-        echo "Checking for OpenCode updates..."
+        info "Checking for OpenCode updates..."
         export PATH="$PATH:$HOME/.opencode/bin"
         current_opencode=$(opencode --version 2>/dev/null | awk '{print $NF}')
         latest_opencode=$(curl -sL https://opencode.ai/install | grep -m 1 "VERSION=" | cut -d'"' -f2)
@@ -60,7 +67,7 @@ sudo nala full-upgrade -y || exit 1
             nix-channel --update || exit 1
             nix profile upgrade --all || exit 1
         else
-            echo "Skipping, Nix is not installed or not in the PATH"
+            info "Skipping, Nix is not installed or not in the PATH"
         fi
 
 # Shell Tools
@@ -101,7 +108,7 @@ sudo nala full-upgrade -y || exit 1
         # Update auto-cpufreq
         if command -v auto-cpufreq &>/dev/null; then
             echo "Updating auto-cpufreq..."
-            sudo auto-cpufreq --update || echo "auto-cpufreq update skipped"
+            sudo auto-cpufreq --update || info "auto-cpufreq update skipped"
         fi
 
 echo "====================================="

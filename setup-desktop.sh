@@ -1,42 +1,36 @@
 #!/usr/bin/env bash
 source "$(cd "$(dirname "$0")" && pwd)/lib.sh"
 
-# Checking
+# ===============
+#     System
+# ===============
+
+# == NVIDIA check ==
 clear
-echo "Did you install the nvidia drivers already or are you using other gpus not needing any drivers? (y/n):"
+header "Nvidia / GPU Drivers"
+echo "Did you install the Nvidia drivers already? (On NixOS, add to configuration.nix:"
+echo "  services.xserver.videoDrivers = [ \"nvidia\" ];)"
 
-while true; do
-    read -p "Answer [y/n]: " reply
-
-    case $reply in
-        Y|y)
-            echo "Continuing..."
-            break
-            ;;
-        N|n)
-            echo "Go and install the nvidia driver first."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+if ! yn "Install Nvidia?"; then
+   info "Go and install it first in the driver manager"
+   sleep 1
+   exit 0
+fi
 
 # Update system
-sudo nala full-upgrade -y || exit 1
+sudo nala full-upgrade -y; ok "System Updated" || exit 1
 
 # ===============
 #      Apps
 # ===============
 
 # Install Deb Apps
-if yn_default "Do you want to install .deb Apps?" "Installing .deb Apps..." "Skipping Installation"; then
+if yn "Do you want to install .deb Apps?" Y; then
     sudo nala install -y vulkan-tools build-essential python3-tk tmux unzip xclip || exit 1
 fi
 
 # Nix
-if yn_default "Do you want to install NixPkg Manager? (y/n):" "Installing NixPkg Manager..." "Skipping installation."; then
+if yn "Do you want to install NixPkg Manager?" N; then
 
     # Install Nixpkgmngr
     sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
@@ -48,7 +42,7 @@ if yn_default "Do you want to install NixPkg Manager? (y/n):" "Installing NixPkg
 fi
 
 # Homebrew
-if yn_default "Do you want to install Homebrew & Homebrew Apps? (y/n):" "Installing Homebrew..." "Skipping installation."; then
+if yn "Do you want to install Homebrew & Homebrew Apps?" Y; then
 
     # Load Homebrew for current session
     if [ -f /home/linuxbrew/.linuxbrew/bin/brew ]; then
@@ -62,16 +56,11 @@ if yn_default "Do you want to install Homebrew & Homebrew Apps? (y/n):" "Install
 
 fi
 
-# Install Additional Browsers
 clear
-echo "=========================================="
-echo "           Additional Browsers"
-echo "=========================================="
-timeout 2s sleep 2
+header "Additional Browsers"
 
 # Helium Browser
-if yn_default "Do you want to install Helium? (y/n):" "Installing browser..." "Skipping browser installation."; then
-
+if yn "Do you want to install Helium?" Y; then
     # Add Helium's signing public key
     curl -fsSL https://raw.githubusercontent.com/imputnet/helium-linux/main/pubkey.asc | sudo gpg --dearmor -o /usr/share/keyrings/helium.gpg
 
@@ -83,7 +72,7 @@ if yn_default "Do you want to install Helium? (y/n):" "Installing browser..." "S
 fi
 
 # Brave Browser
-if yn_default "Do you want to install Brave Browser? (y/n):" "Installing browser..." "Skipping browser installation."; then
+if yn "Do you want to install Brave Browser?" Y; then
     # Import Brave Browser's Repo
     sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
     sudo curl -fsSLo /etc/apt/sources.list.d/brave-browser-release.sources https://brave-browser-apt-release.s3.brave.com/brave-browser.sources
@@ -93,7 +82,7 @@ if yn_default "Do you want to install Brave Browser? (y/n):" "Installing browser
 fi
 
 # Librewolf
-if yn_default "Do you want to install Librewolf? (y/n):" "Installing browser..." "Skipping browser installation."; then
+if yn "Do you want to install Librewolf?" Y; then
     # Enable Librewolf's repo
     sudo extrepo enable librewolf || exit 1
 
@@ -102,28 +91,25 @@ if yn_default "Do you want to install Librewolf? (y/n):" "Installing browser..."
 fi
 
 # Mullvad Browser
-if yn_default "Do you want to install Mullvad Browser? (y/n):" "Installing browser..." "Skipping browser installation."; then
+if yn "Do you want to install Mullvad Browser?" Y; then
     flatpak install flathub net.mullvad.MullvadBrowser --noninteractive
 fi
 
 # Floorp Browser
-if yn_default "Do you want to install Floorp? (y/n):" "Installing browser..." "Skipping browser installation."; then
+if yn "Do you want to install Floorp?" Y; then
     flatpak install flathub one.ablaze.floorp --noninteractive
 fi
 
 # Zen Browser
-if yn_default "Do you want to install Zen Browser? (y/n):" "Installing browser..." "Skipping browser installation."; then
+if yn "Do you want to install Zen Browser?" Y; then
     flatpak install flathub app.zen_browser.zen --noninteractive
 fi
 
 clear
-echo "============================================="
-echo "           Additional Tools & Games          "
-echo "============================================="
-timeout 2s sleep 2
+header "Additional tools and games"
 
 # Install Additional
-if yn_second "Do you want to install Additional tools? (Might not be needed for desktop usage) (y/n)" "Installing tools..." "Skipping installation."; then
+if yn "Do you want to install Additional tools? (Usually not needed for desktop usage)" N; then
     wget https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.8_all.deb
     sudo dpkg -i protonvpn-stable-release_1.0.8_all.deb
 
@@ -138,16 +124,8 @@ fi
 # Additionals2
 clear
 URL="http://127.0.0.1:7657/"
-BROWSERS=("firefox" "chromium-browser")
 
-install_browser() {
-    local browser=$1
-    echo "Installing $browser..."
-    sudo nala update
-    sudo nala install -y "$browser"
-}
-
-if yn_second "Do you want to install Additional tool? (2) (y/n)" "Installing tools..." "Skipping installation."; then
+if yn "Do you want to install Additional tool? (2)" N; then
     sudo add-apt-repository -y ppa:i2p-maintainers/i2p
 
     sudo nala update
@@ -170,32 +148,29 @@ if yn_second "Do you want to install Additional tool? (2) (y/n)" "Installing too
     done
 
     if ! $found; then
-        echo "No supported browser found."
+        info "No supported browser found."
         echo "1) firefox"
         echo "2) chromium-browser"
 
-        read -rp "Choice [1-2]: " choice
-
-        case "$choice" in
-            1) install_browser firefox ;;
-            2) install_browser chromium-browser ;;
-            *) echo "Invalid option" ;;
+        case $(pick "Choice [1-2]:" 1 2) in
+            1) sudo nala install -y firefox ;;
+            2) sudo nala install -y chromium-browser ;;
+            *) err "Invalid option" ;;
         esac
     fi
 fi
 
 # Game Dev
-if yn_default "Do you want to install GameDev Apps? (y/n):" "Installing GameDev Apps..." "Skipping GameDev Apps installation."; then
-    mkdir -p ""
+if yn "Do you want to install GameDev Apps?" Y; then
 
-    echo "Installing Godot..."
+    info "Installing Godot..."
     curl -fL \
         https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_linux.x86_64.zip \
         -o Godot_v4.6.2-stable_linux.x86_64.zip || exit 1
 
     unzip -o Godot_v4.6.2-stable_linux.x86_64.zip -d
 
-    info "Instal LDtk Manually"
+    info "Install LDtk Manually"
 
     # LibreSprite
     info "Downloading LibreSprite..."
@@ -205,13 +180,14 @@ if yn_default "Do you want to install GameDev Apps? (y/n):" "Installing GameDev 
 fi
 
 # Games
-if yn_default "Do you want to install Games aswell? (y/n):" "Installing Games..." "Skipping installation of games."; then
+if yn "Do you want to install Games aswell?" Y; then
     flatpak install flathub org.luanti.luanti info.beyondallreason.bar org.openttd.OpenTTD net.openra.OpenRA net.wz2100.wz2100 --noninteractive
 fi
 
 # Code
-if yn_default "Do you want to install VSCode (y/n):" "Installing VSCode..." "Skipping VSCode installation."; then
+if yn "Do you want to install VSCode" Y; then
     # Download VS Code
+    info "Downloading VSCode"
     curl -fL \
         https://vscode.download.prss.microsoft.com/dbazure/download/stable/bdd88df003631aaa0bcbe057cb0a940b80a476fa/code_1.109.0-1770171879_amd64.deb \
         -o vscode.deb || exit 1
@@ -223,8 +199,7 @@ if yn_default "Do you want to install VSCode (y/n):" "Installing VSCode..." "Ski
 fi
 
 # Codium
-if yn_default "Do you want to install VSCodium (y/n):" "Installing VSCodium..." "Skipping VSCodium installation."; then
-
+if yn "Do you want to install VSCodium" Y; then
     # Import VSCodium keyring
     wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg \
         | gpg --dearmor \
@@ -238,45 +213,43 @@ if yn_default "Do you want to install VSCodium (y/n):" "Installing VSCodium..." 
 fi
 
 # Logseq
-if yn_default "Do you want to install Logseq (y/n):" "Installing Logseq..." "Skipping Logseq installation."; then
+if yn "Do you want to install Logseq" Y; then
     flatpak install flathub com.logseq.Logseq --noninteractive
 fi
 
 # Educational Apps
-if yn_default "Do you want to Educational Apps (Edubuntu)? (y/n):" "Installing Educational Apps..." "Skipping installation of Educational Apps..."; then
+if yn "Do you want to Educational Apps (Edubuntu)?" Y; then
     edu_apps
 fi
 
 # VirtManager (GnomeBoxes)
-if yn_default "Do you want to install VirtManager (GnomeBoxes) (y/n):" "Installing VirtManager..." "Skipping VirtManager installation."; then
-    flatpak install flathub --noninteractive org.gnome.Boxes
+if yn "Do you want to install VirtManager (GnomeBoxes)" Y; then
+    flatpak install flathub org.gnome.Boxes --noninteractive
 fi
 
 # AI Tools
 clear
-echo "=============================="
-echo "           AI Tools"
-echo "=============================="
-timeout 2s sleep 2
+header "AI Tools"
 
 # Ollama
-if yn_default "Do you want to install Ollama? (y/n):" "Installing Ollama..." "Skipping Ollama installation."; then
-    echo "Installing Dependencies"
+if yn "Do you want to install Ollama?" Y; then
+    info "Installing Dependencies..."
     sudo nala install -y nvidia-cuda-toolkit            
 
     curl -fsSL https://ollama.com/install.sh | sh
 
-    echo "Enabling system service"
+    info "Enabling system service..."
     sudo systemctl enable ollama
 fi
 
 # OpenCode
-if yn_default "Do you want to install OpenCode? (y/n):" "Installing OpenCode..." "Skipping OpenCode installation."; then
+if yn "Do you want to install OpenCode?" Y; then
+    info "Installing OpenCode..."
     curl -fsSL https://opencode.ai/install | bash
 fi
 
 # Oterm
-if yn_default "Do you want to install Oterm? (y/n):" "Installing Oterm..." "Skipping Oterm installation."; then
+if yn "Do you want to install Oterm?" Y; then
     brew install oterm
 
     mkdir -p "$(oterm --data-dir 2>/dev/null || echo ~/.local/share/oterm)" && \
@@ -289,7 +262,7 @@ if yn_default "Do you want to install Oterm? (y/n):" "Installing Oterm..." "Skip
 fi
 
 # Alpaca
-if yn_default "Do you want to install Alpaca? (y/n):" "Installing Alpaca..." "Skipping Alpaca installation."; then
+if yn "Do you want to install Alpaca?" Y; then
     flatpak install flathub com.jeffser.Alpaca --noninteractive
 fi
 
@@ -300,11 +273,14 @@ has_opencode=$(command -v opencode)
 if [ -n "$has_ollama" ] || [ -n "$has_opencode" ]; then
     clear
     echo "Configuring AI tools..."
-    ~/linuxmintsetup/ai_confs.sh
+    $SCRIPT_DIR/ai_confs.sh
 fi
 
 # Install Flatpak apps
-if yn_default "Do you want to install flatpak apps?" "Installing flatpak apps..." "Skipping installation."; then
+
+clear
+header "Flatpaks"
+if yn "Do you want to install flatpak apps?" Y; then
     flatpak install flathub \
     com.rtosta.zapzap \
     org.telegram.desktop \
@@ -318,50 +294,42 @@ if yn_default "Do you want to install flatpak apps?" "Installing flatpak apps...
 fi
 
 # Power Management
-echo "================================================"
-echo "           Power / Battery Utilities"
-echo "================================================"
+header "Power Management"
 echo "Which power management tool would you like to install?"
 echo "1) auto-cpufreq"
 echo "2) TLP"
 echo "3) Skip Installation"
 
-read -p "Enter choice [1-3]: " choice
-
-case $choice in
-    '1')
-        echo "Installing auto-cpufreq..."
+case $(pick "Choice [1-3]:" 1 3) in
+    1)
+        info "Installing auto-cpufreq..."
         sudo nala update || exit 1
         git clone https://github.com/AdnanHodzic/auto-cpufreq.git || exit 1
         cd auto-cpufreq || exit 1
         sudo ./auto-cpufreq-installer || exit 1
         cd .. && rm -rf auto-cpufreq
 
-        echo "================================================"
-        echo "       Power Management Setup Complete.         "
-        echo "================================================"
+        ok "Power Management Setup Complete."
         ;;
-    '2')
-        echo "Installing TLP..."
+    2)
+        info "Installing TLP..."
         sudo nala update || exit 1
         sudo nala install -y tlp tlp-rdw || exit 1
         sudo systemctl enable --now tlp || exit 1
 
-        echo "================================================"
-        echo "       Power Management Setup Complete.         "
-        echo "================================================"
+        ok "Power Management Setup Complete."
         ;;
-    '3')
-        echo "Exiting."
+    3)
+        info "Exiting."
         ;;
     *)
-        echo "Invalid option."
+        err "Invalid option."
         exit 1
         ;;
 esac
 
 # Final Checks
-sudo nala full-upgrade || exit 1
+sudo nala full-upgrade; ok "Final System Update Complete" || exit 1
 
 echo "=================================================="
 echo "     Setup Complete :> , Please Reboot Your PC    "

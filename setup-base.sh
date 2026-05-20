@@ -22,7 +22,7 @@ sudo nala install -y build-essential fish figlet extrepo \
 apparmor-utils apparmor-profiles apparmor-profiles-extra wget curl jq software-properties-common gawk
 
 # Hblock
-if yn_default "Do you want to install Hblock? (y/n):" "Installing Hblock..." "Skipping Installation."; then
+if yn "Do you want to install Hblock?" Y; then
     curl -o /tmp/hblock 'https://raw.githubusercontent.com/hectorm/hblock/v3.5.1/hblock'
     echo 'd010cb9e0f3c644e9df3bfb387f42f7dbbffbbd481fb50c32683bbe71f994451  /tmp/hblock' | shasum -c
     sudo mv /tmp/hblock /usr/local/bin/hblock
@@ -32,7 +32,9 @@ if yn_default "Do you want to install Hblock? (y/n):" "Installing Hblock..." "Sk
 fi
 
 # Download Portmaster
-if yn_default "Do you want to install Portmaster? (y/n): " "Installing Portmaster..." "Skipping Installation"; then
+if yn "Do you want to install Portmaster?" Y; then
+
+    info "Downloading Portmaster"
     curl -fL https://updates.safing.io/latest/linux_amd64/packages/Portmaster_2.1.7_amd64.deb \
     -o portmaster.deb
 
@@ -41,7 +43,7 @@ if yn_default "Do you want to install Portmaster? (y/n): " "Installing Portmaste
 fi
 
 # Rkhunter
-if yn_default "Install & Configure Rkhunter?" "Installing Rkhunter..." "Skipping Rkhunter"; then
+if yn "Install & Configure Rkhunter?" Y; then
 
     sudo nala install -y rkhunter
     if command -v rkhunter &>/dev/null; then
@@ -57,12 +59,12 @@ if yn_default "Install & Configure Rkhunter?" "Installing Rkhunter..." "Skipping
 fi
 
 # Firejail Configuration
-if yn_default "Install & Configure Firejail?" "Installing Firejail..." "Skipping Firejail."; then
+if yn "Install & Configure Firejail?" Y; then
     firejail_install
 fi
 
 # Fail2ban
-if yn_default "Install & Configure Fail2ban?" "Installing Fail2ban..." "Skipping Fail2ban."; then
+if yn "Install & Configure Fail2ban?" Y; then
 
     sudo nala install -y fail2ban
 
@@ -90,21 +92,21 @@ EOF"
 
         sudo systemctl enable --now fail2ban || exit 1
         sudo systemctl reload fail2ban && \
-        echo "Fail2Ban configuration applied." || \
-        echo "Reload failed."
+        ok "Fail2Ban configuration applied." || \
+        err "Reload failed."
     else
-        echo "jail.local already exists. No changes made."
+        info "jail.local already exists. No changes made."
     fi
 fi
 
 # Clamav
-if yn_default "Install & Configure ClamAV?" "Installing ClamAV..." "Skipping ClamAV."; then
+if yn "Install & Configure ClamAV?" Y; then
     sudo nala install -y clamav-base clamav-freshclam
     sudo systemctl enable --now clamav-freshclam || exit 1
 fi
 
 # UFW
-if yn_default "Install & Configure UFW?" "Installing UFW..." "Skipping UFW."; then
+if yn "Install & Configure UFW?" Y; then
     sudo nala install -y ufw gufw
     sudo ufw default deny incoming || exit 1
     sudo ufw default allow outgoing || exit 1
@@ -117,7 +119,7 @@ fi
 # ===============
 
 # Git Setup
-if yn_default "Configure Git?" "Configuring Git..." "Skipping Git."; then
+if yn "Configure Git?" Y; then
     echo "Setting up Git..."
     read -p "Enter your name: " git_name
     read -p "Enter your email: " git_email
@@ -139,7 +141,7 @@ if yn_default "Configure Git?" "Configuring Git..." "Skipping Git."; then
 fi
 
 # Homebrew
-if yn_default "Do you want to install Homebrew? (y/n):" "Installing Homebrew..." "Skipping installation."; then
+if yn "Do you want to install Homebrew? (y/n):" Y; then
     # Install Homebrew
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || exit 1
 
@@ -151,11 +153,11 @@ if yn_default "Do you want to install Homebrew? (y/n):" "Installing Homebrew..."
 fi
 
 # Installing LazyVim
-if yn_default "Do you want to install Neovim? & configure LazyVim?" "Starting installation & configuration of Neovim..." "Skipping installation & configuration"; then
+if yn "Do you want to install Neovim? & configure LazyVim?" Y; then
 
     # Homebrew apps
     brew install neovim || {
-    echo "Warning neovim installation failed. is homebrew installed?"
+    err "Warning neovim installation failed. is homebrew installed?"
     exit 1
     }
 
@@ -166,7 +168,7 @@ if yn_default "Do you want to install Neovim? & configure LazyVim?" "Starting in
     mv ~/.cache/nvim ~/.cache/nvim.bak 2>/dev/null || true
 
     # Clone LazyVim starter
-    echo "Cloning LazyVim starter..."
+    info "Cloning LazyVim starter..."
     git clone https://github.com/LazyVim/starter ~/.config/nvim
 
     # Remove git history
@@ -206,41 +208,37 @@ fi
 # Shell Configuration
 configure_shells() {
     clear
-    echo "================================================="
-    echo "           Setup & Configure Shells"
-    echo "================================================="
-    echo "Setup & Configure Shells"
+    header "Shell Configuration"
+    echo "Setup & Configure Shells? "
     echo "1) Bash (ble.sh, bash-completion, atuin)"
     echo "2) Zsh (Oh My Zsh, autosuggestions, syntax-highlighting)"
     echo "3) Fish (Config, aliases)"
     echo "4) All of the above"
     echo "5) Skip"
-    read -p $'\e[32mEnter choice [1-5]: \e[0m' shell_choice
-    case $shell_choice in
+
+    case $(pick "Choice [1-5]:" 1 5) in
         '1') configure_bash ;;
         '2') configure_zsh ;;
         '3') configure_fish ;;
         '4') configure_bash; configure_zsh; configure_fish ;;
-        '5') echo "Skipping Shell Configuration." ;;
-        *) echo "Invalid choice."; exit 1 ;;
+        '5') info "Skipping Shell Configuration." ;;
+        *) err "Invalid choice."; exit 1 ;;
     esac
 
     # Set default shell
     clear
-    echo "======================================="
-    echo "           Set Default Shell"
-    echo "======================================="
+    header "Set Default Shell"
+    echo "Change Default Shell"
     echo "1) Keep Bash"
     echo "2) Fish"
     echo "3) Zsh"
     echo "4) Skip"
-    read -p $'\e[32mEnter choice [1-4]: \e[0m' choice
-    case $choice in
+    case $(pick "Choice [1-4]:" 1 4) in
         '1') sudo chsh -s /bin/bash ;;
         '2') sudo chsh -s "$(which fish)" "$USER" ;;
         '3') sudo chsh -s "$(which zsh)" "$USER" ;;
-        '4') echo "Skipping..." ;;
-        *) echo "Invalid choice." ;;
+        '4') info "Skipping..." ;;
+        *) err "Invalid choice." ;;
     esac
 }
 

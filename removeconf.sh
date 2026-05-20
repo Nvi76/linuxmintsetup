@@ -1,106 +1,60 @@
 #!/usr/bin/env bash
 set -euo pipefail
+source "$(cd "$(dirname "$0")" && pwd)/lib.sh"
 
-# 1. Remove firejail
-echo "======================================"
-echo "           Remove Firejail?"
-echo "======================================"
-echo "Do you want to remove SecConf Firejail? WARNING will make changes to system and stuff"
-echo "1) Yes, Remove Firejail"
-echo "2) No, Don't Remove Firejail"
+# == Security & Others ==
 
-# Use ANSI escape codes for colored prompt
-read -p $'\e[32mEnter choice [1-2]: \e[0m' choice
+header "Security & Others"
+if yn "Remove firejail?"; then
 
-case $choice in
-    '1')
      # Remove Firejail
-        sudo nala purge firejail firejail-profiles || { echo "Failed to remove Firejail, is it installed?"; exit 1; }
+        sudo nala purge firejail firejail-profiles || { err "Failed to remove Firejail, is it installed?"; exit 1; }
 
     # Remove Folders & Profiles
         sudo rm -rf /etc/firejail || true
         sudo rm -rf ~/.config/firejail || true
 
-        echo "================================="
-        echo "        Firejail Removed         "
-        echo "================================="
-        ;;
+    else
+    info "Command failed or skipped"
+fi
 
-    '2')
-        echo "================================"
-        echo "        Cancelling......        "
-        echo "================================"
-        ;;
+# Remove Additionals
+if yn "Remove Additionals?"; then
+    clear
+    remove_if_installed() {
+        local packages=("$@")
+        local to_remove=()
 
-      *)
-        echo "Invalid option."
-        exit 1
-esac
+        for package in "${packages[@]}"; do
+            if dpkg -s "$package" &>/dev/null; then
+                to_remove+=("$package")
+            else
+                info "$package is not installed"
+            fi
+        done
 
-# 2. Remove Additionals
-clear
-echo "Remove Additionals?"
-while true; do
-    read -rp "Answer [y/n]: " reply
-    case "$reply" in
-        [Yy]*)
-            clear
-            remove_if_installed() {
-                local packages=("$@")
-                local to_remove=()
-
-                for package in "${packages[@]}"; do
-                    if dpkg -s "$package" &>/dev/null; then
-                        to_remove+=("$package")
-                    else
-                        echo "$package is not installed"
-                    fi
-                done
-
-                if [ ${#to_remove[@]} -eq 0 ]; then
-                    echo "None of the packages are installed."
-                    return 0
-                elif [ ${#to_remove[@]} -eq ${#packages[@]} ]; then
-                    echo "All packages are installed. Removing all..."
-                else
-                    echo "Removing only the installed packages..."
-                fi
-
+        if [ ${#to_remove[@]} -eq 0 ]; then
+            info "None of the packages are installed."
+            return 0
+        elif [ ${#to_remove[@]} -eq ${#packages[@]} ]; then
+            info "All packages are installed. Removing all..."
+        else
+            info "Removing only the installed packages..."
+        fi
                 sudo nala purge "${to_remove[@]}"
-            }
+        }
 
-            remove_if_installed torbrowser-launcher proton-vpn-cli i2pd
-            break
-            ;;
-        [Nn]*)
-            echo "Skipping removal."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n'."
-            ;;
-    esac
-done
+remove_if_installed torbrowser-launcher proton-vpn-cli i2pd
+fi
 
-# 3. Remove AI Apps (OpenCode, Ollama, Alpaca)
-clear
-echo "======================================"
-echo "           Remove AI Apps?"
-echo "======================================"
-echo "This will remove OpenCode, Ollama, and Alpaca along with their configs."
-echo "Do you want to continue?"
-echo "1) Yes, Remove AI Apps"
-echo "2) No, Skip"
-
-read -p $'\e[32mEnter choice [1-2]: \e[0m' choice
-
-case $choice in
-    '1')
-        echo "Removing AI apps..."
+# Remove AI Apps (OpenCode, Ollama, Alpaca)
+header "AI Apps"
+if yn "Remove AI Apps?"; then
+        info "Removing AI apps..."
 
         if command -v opencode &>/dev/null; then
             sudo rm -f "$(command -v opencode)" 2>/dev/null || true
-            echo "Removed OpenCode binary."
+            ok "Removed OpenCode binary."
         fi
 
         if command -v ollama &>/dev/null; then
@@ -109,29 +63,23 @@ case $choice in
             sudo systemctl disable ollama 2>/dev/null || true
             rm -f /etc/systemd/system/ollama.service 2>/dev/null || true
             sudo rm -f /etc/systemd/system/multi-user.target.wants/ollama.service 2>/dev/null || true
-            echo "Removed Ollama."
+            ok "Removed Ollama."
         fi
 
         if flatpak info com.jeffser.Alpaca &>/dev/null; then
             flatpak remove -y com.jeffser.Alpaca 2>/dev/null || true
-            echo "Removed Alpaca."
+            ok "Removed Alpaca."
         fi
 
         rm -rf ~/.config/opencode 2>/dev/null || true
         rm -rf ~/.ollama 2>/dev/null || true
-        echo "Removed AI app configs."
+        ok "Removed AI app configs."
 
-        echo "================================="
-        echo "        AI Apps Removed          "
-        echo "================================="
-        ;;
+    else
+        info "Command Failed or Cancelled"
+fi
 
-    '2')
-        echo "Skipping AI removal."
-        ;;
-esac
-
-# 4. Remove GameDev Apps (Godot, LDtk, Libresprite)
+# Remove GameDev Apps (Godot, LDtk, Libresprite)
 clear
 echo "======================================"
 echo "         Remove GameDev Apps?"
@@ -141,10 +89,8 @@ echo "Do you want to continue?"
 echo "1) Yes, Remove GameDev Apps"
 echo "2) No, Skip"
 
-read -p $'\e[32mEnter choice [1-2]: \e[0m' choice
-
-case $choice in
-    '1')
+case $(pick "Choice [1-2]:" 1 2) in
+      1)
         echo "Removing GameDev apps..."
 
         rm -f ~/linuxmintsetup/Godot* 2>/dev/null || true
@@ -156,14 +102,14 @@ case $choice in
         rm -rf ~/.local/share/LibreSprite 2>/dev/null || true
         rm -rf ~/.local/share/libresprite 2>/dev/null || true
         rm -rf ~/.config/GearLever 2>/dev/null || true
-        echo "Removed GameDev apps and configs."
+        ok "Removed GameDev apps and configs."
 
         echo "================================="
         echo "      GameDev Apps Removed       "
         echo "================================="
         ;;
 
-    '2')
+      2)
         echo "Skipping GameDev removal."
         ;;
 esac
