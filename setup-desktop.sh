@@ -272,7 +272,7 @@ has_opencode=$(command -v opencode)
 if [ -n "$has_ollama" ] || [ -n "$has_opencode" ]; then
     clear
     echo "Configuring AI tools..."
-    $SCRIPT_DIR/ai_confs.sh
+    "$SCRIPT_DIR"/ai_confs.sh
 fi
 
 # Install Flatpak apps

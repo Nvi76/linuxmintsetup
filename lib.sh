@@ -8,7 +8,7 @@ update_system() { sudo nala full-upgrade -y; }
 enable_svc()    { sudo systemctl enable --now "$@"; }
 
 # == UI helpers ==
-RED='\033[91m'; GREEN="\e[38;2;85;207;62m"; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
+RED='\033[91m'; GREEN="\e[38;2;85;207;62m"; YELLOW='\033[1;33m'; NC='\033[0m'
 info()  { echo -e "${YELLOW}=> $1${NC}"; }
 ok()    { echo -e "${GREEN}=> $1${NC}"; }
 err()   { echo -e "${RED}=> $1${NC}"; }
@@ -34,8 +34,8 @@ yn() {
         fi
 
         case "${reply,,}" in
-            y|yes) return 0 ;;
-            n|no)  return 1 ;;
+            y|yes|Y) return 0 ;;
+            n|no|N)  return 1 ;;
             *) err "Please enter y or n." ;;
         esac
     done
@@ -49,7 +49,7 @@ edu_apps() {
     echo "4) Tertiary (Collage Level)"
     echo "5) All"
 
-    case $ (pick "choice [1-5]:" 1 5) in
+    case $(pick "choice [1-5]:" 1 5) in
         1) sudo nala install -y ubuntu-edu-preschool ;;
         2) sudo nala install -y ubuntu-edu-primary ;;
         3) sudo nala install -y ubuntu-edu-secondary ;;
@@ -156,7 +156,6 @@ EOF
 
       3)
         info "Skipping Firejail Installation. "
-        exit 0
         ;;
     *)
         err "Invalid choice."
@@ -200,7 +199,7 @@ configure_bash() {
                         nix profile install nixpkgs#ble-sh
                         ;;
                     *)
-                        echo "Invalid choice."
+                        err "Invalid choice."
                         ;;
                 esac
 

@@ -45,6 +45,8 @@ if yn "Remove Additionals?"; then
         }
 
 remove_if_installed torbrowser-launcher proton-vpn-cli i2pd
+else
+    info "Skipping..."
 fi
 
 # Remove AI Apps (OpenCode, Ollama, Alpaca)
@@ -90,11 +92,11 @@ echo "2) No, Skip"
 
 case $(pick "Choice [1-2]:" 1 2) in
       1)
-        echo "Removing GameDev apps..."
+        info "Removing GameDev apps..."
 
-        rm -f $SCRIPT_DIR/Godot* 2>/dev/null || true
-        rm -f $SCRIPT_DIR/LDtk* 2>/dev/null || true
-        rm -f $SCRIPT_DIR/LibreSprite* 2>/dev/null || true
+        rm -f "$SCRIPT_DIR"/Godot* 2>/dev/null || true
+        rm -f "$SCRIPT_DIR"/LDtk* 2>/dev/null || true
+        rm -f "$SCRIPT_DIR"/LibreSprite* 2>/dev/null || true
 
         rm -rf ~/.config/godot 2>/dev/null || true
         rm -rf ~/.config/ldtk 2>/dev/null || true

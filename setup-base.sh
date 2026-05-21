@@ -9,7 +9,7 @@ chmod +x updater.sh removeconf.sh setup-desktop.sh ai_confs.sh
 
 # Backup hosts & Copy file
 sudo cp /etc/hosts "$HOME/linuxmintsetup/hosts.backup"
-cp $SCRIPT_DIR/updater.sh ~/.updater.sh  || exit 1
+cp "$SCRIPT_DIR"/updater.sh ~/.updater.sh  || exit 1
 
 # ===============
 #    Security
@@ -19,7 +19,7 @@ cp $SCRIPT_DIR/updater.sh ~/.updater.sh  || exit 1
 sudo apt update
 sudo apt install -y nala git curl
 sudo nala install -y build-essential fish figlet extrepo \
-apparmor-utils apparmor-profiles apparmor-profiles-extra wget curl jq software-properties-common gawk
+apparmor-utils apparmor-profiles apparmor-profiles-extra wget curl jq software-properties-common gawk shellcheck
 
 # Hblock
 if yn "Do you want to install Hblock?" Y; then
@@ -89,7 +89,7 @@ maxretry = 2
 EOF"
 
         sudo systemctl enable --now fail2ban || exit 1
-        sudo systemctl reload fail2ban && \
+        sudo systemctl reload fail2ban \
         ok "Fail2Ban configuration applied." || \
         err "Reload failed."
     else
@@ -119,8 +119,8 @@ fi
 # Git Setup
 if yn "Configure Git?" Y; then
     echo "Setting up Git..."
-    read -p "Enter your name: " git_name
-    read -p "Enter your email: " git_email
+    read -rp "Enter your name: " git_name
+    read -rp "Enter your email: " git_email
 
     git config --global user.name "$git_name" || exit 1
     git config --global user.email "$git_email" || exit 1

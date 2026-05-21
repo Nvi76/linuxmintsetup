@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # UI helpers
-RED='\033[0;31m'; GREEN="\e[38;2;85;207;62m"; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
+RED='\033[0;31m'; GREEN="\e[38;2;85;207;62m"; YELLOW='\033[1;33m'; NC='\033[0m'
 info()  { echo -e "${YELLOW}=> $1${NC}"; }
 ok()    { echo -e "${GREEN}=> $1${NC}"; }
 err()   { echo -e "${RED}=> $1${NC}"; }
@@ -31,10 +31,10 @@ header(){ echo; echo -e "${GREEN}══ $1 ══${NC}"; }
         latest_ollama=$(curl -sL https://api.github.com/repos/ollama/ollama/releases/latest | grep -oP '"tag_name": "v\K[^"]*')
 
         if [ -n "$latest_ollama" ] && [ "$current_ollama" != "$latest_ollama" ]; then
-            echo "New Ollama version found: $latest_ollama (Current: $current_ollama). Updating..."
+            info "New Ollama version found: $latest_ollama (Current: $current_ollama). Updating..."
             curl -fsSL https://ollama.com/install.sh | sh
         else
-            echo "Ollama is up to date ($current_ollama)."
+            info "Ollama is up to date ($current_ollama)."
         fi
 
         # Update OpenCode
@@ -44,10 +44,10 @@ header(){ echo; echo -e "${GREEN}══ $1 ══${NC}"; }
         latest_opencode=$(curl -sL https://opencode.ai/install | grep -m 1 "VERSION=" | cut -d'"' -f2)
 
         if [ -n "$latest_opencode" ] && [ "$current_opencode" != "$latest_opencode" ]; then
-            echo "New OpenCode version found: $latest_opencode (Current: $current_opencode). Updating..."
+            info "New OpenCode version found: $latest_opencode (Current: $current_opencode). Updating..."
             curl -fsSL https://opencode.ai/install | bash
         else
-            echo "OpenCode is up to date ($current_opencode)."
+            info "OpenCode is up to date ($current_opencode)."
         fi
 
 # == Apps ==
@@ -81,31 +81,31 @@ header(){ echo; echo -e "${GREEN}══ $1 ══${NC}"; }
         # Update ble.sh (git install)
         if [ -d "$HOME/.local/share/blesh" ] && [ ! -f "$HOME/.local/share/blesh/.git" ]; then
             if command -v nix &>/dev/null && nix profile list 2>/dev/null | grep -q ble-sh; then
-                echo "Updating ble.sh via nix..."
+                info "Updating ble.sh via nix..."
                 nix profile upgrade ble-sh 2>/dev/null || true
             fi
         fi
 
         if [ -d "$HOME/.local/share/blesh/.git" ]; then
-            echo "Updating ble.sh..."
+            info "Updating ble.sh..."
             git -C "$HOME/.local/share/blesh" pull --recurse-submodules
             make -C "$HOME/.local/share/blesh" install PREFIX="$HOME/.local"
         fi
 
         # Update Oh My Zsh
         if [ -d "$HOME/.oh-my-zsh/.git" ]; then
-            echo "Updating Oh My Zsh..."
+            info "Updating Oh My Zsh..."
             git -C "$HOME/.oh-my-zsh" pull --ff-only
         fi
 
         # Update zsh plugins
         ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
         if [ -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions/.git" ]; then
-            echo "Updating zsh-autosuggestions..."
+            info "Updating zsh-autosuggestions..."
             git -C "$ZSH_CUSTOM/plugins/zsh-autosuggestions" pull --ff-only
         fi
         if [ -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting/.git" ]; then
-            echo "Updating zsh-syntax-highlighting..."
+            info "Updating zsh-syntax-highlighting..."
             git -C "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" pull --ff-only
         fi
 
@@ -114,7 +114,7 @@ header(){ echo; echo -e "${GREEN}══ $1 ══${NC}"; }
         header "Power Management"
         # Update auto-cpufreq
         if command -v auto-cpufreq &>/dev/null; then
-            echo "Updating auto-cpufreq..."
+            info "Updating auto-cpufreq..."
             sudo auto-cpufreq --update || info "auto-cpufreq update skipped"
         fi
 
