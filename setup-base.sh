@@ -9,7 +9,7 @@ chmod +x updater.sh removeconf.sh setup-desktop.sh ai_confs.sh
 
 # Backup hosts & Copy file
 sudo cp /etc/hosts "$HOME/linuxmintsetup/hosts.backup"
-cp  ~/linuxmintsetup/updater.sh ~/.updater.sh  || exit 1
+cp $SCRIPT_DIR/updater.sh ~/.updater.sh  || exit 1
 
 # ===============
 #    Security
@@ -33,7 +33,6 @@ fi
 
 # Download Portmaster
 if yn "Do you want to install Portmaster?" Y; then
-
     info "Downloading Portmaster"
     curl -fL https://updates.safing.io/latest/linux_amd64/packages/Portmaster_2.1.7_amd64.deb \
     -o portmaster.deb
@@ -47,7 +46,7 @@ if yn "Install & Configure Rkhunter?" Y; then
 
     sudo nala install -y rkhunter
     if command -v rkhunter &>/dev/null; then
-        echo "Fixing rkhunter configuration..."
+        info "Fixing rkhunter configuration..."
         sudo sed -i 's/^MIRRORS_MODE=1/MIRRORS_MODE=0/' /etc/rkhunter.conf
         sudo sed -i 's/^UPDATE_MIRRORS=0/UPDATE_MIRRORS=1/' /etc/rkhunter.conf
         sudo sed -i 's/^WEB_CMD="\/bin\/false"/WEB_CMD=""/' /etc/rkhunter.conf
@@ -65,7 +64,6 @@ fi
 
 # Fail2ban
 if yn "Install & Configure Fail2ban?" Y; then
-
     sudo nala install -y fail2ban
 
     if ! sudo test -f /etc/fail2ban/jail.local; then
@@ -133,10 +131,10 @@ if yn "Configure Git?" Y; then
     if [ ! -f "$HOME/.ssh/id_ed25519.pub" ]; then
         mkdir -p "$HOME/.ssh"
         ssh-keygen -t ed25519 -C "$git_email" -N "" -f "$HOME/.ssh/id_ed25519"
-        echo "SSH key generated. Add this to GitHub -> Settings -> SSH keys:"
+        ok "SSH key generated. Add this to GitHub -> Settings -> SSH keys:"
         cat "$HOME/.ssh/id_ed25519.pub"
     else
-        echo "SSH key already exists at ~/.ssh/id_ed25519.pub"
+        err "SSH key already exists at ~/.ssh/id_ed25519.pub"
     fi
 fi
 
@@ -233,6 +231,7 @@ configure_shells() {
     echo "2) Fish"
     echo "3) Zsh"
     echo "4) Skip"
+
     case $(pick "Choice [1-4]:" 1 4) in
         '1') sudo chsh -s /bin/bash ;;
         '2') sudo chsh -s "$(which fish)" "$USER" ;;
@@ -244,7 +243,4 @@ configure_shells() {
 
 configure_shells
 
-clear
-echo "========================================"
-echo "       Security Setup Complete.         "
-echo "========================================"
+ok "Security Setup Complete."

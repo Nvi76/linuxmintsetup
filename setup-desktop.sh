@@ -5,13 +5,12 @@ source "$(cd "$(dirname "$0")" && pwd)/lib.sh"
 #     System
 # ===============
 
-# == NVIDIA check ==
+# NVIDIA check
 clear
 header "Nvidia / GPU Drivers"
-echo "Did you install the Nvidia drivers already? (On NixOS, add to configuration.nix:"
-echo "  services.xserver.videoDrivers = [ \"nvidia\" ];)"
+info "Did you install the Nvidia drivers already?"
 
-if ! yn "Install Nvidia?"; then
+if ! yn ""; then
    info "Go and install it first in the driver manager"
    sleep 1
    exit 0
@@ -331,6 +330,4 @@ esac
 # Final Checks
 sudo nala full-upgrade; ok "Final System Update Complete" || exit 1
 
-echo "=================================================="
-echo "     Setup Complete :> , Please Reboot Your PC    "
-echo "=================================================="
+ok "Setup Complete. Please Reboot Your PC"

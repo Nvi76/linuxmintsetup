@@ -15,11 +15,11 @@ err()   { echo -e "${RED}=> $1${NC}"; }
 header(){ echo; echo -e "${GREEN}══ $1 ══${NC}"; }
 
 pick() {
-    local prompt="$1" min="$2" max="$3"
+    local prompt=$1 min=$2 max=$3
     while true; do
         read -rp "$prompt " choice
-        [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= min && choice <= max )) && echo "$choice" && return
-        err "Enter a number $min-$max."
+        [[ $choice =~ ^[0-9]+$ ]] && (( choice >= min && choice <= max )) && echo "$choice" && return
+        echo "Enter a number $min-$max."
     done
 }
 
@@ -48,10 +48,8 @@ edu_apps() {
     echo "3) Secondary (SMP-SMA)"
     echo "4) Tertiary (Collage Level)"
     echo "5) All"
-    echo -n "Enter choice (1-5): "
-    read choice
 
-    case $choice in
+    case $ (pick "choice [1-5]:" 1 5) in
         1) sudo nala install -y ubuntu-edu-preschool ;;
         2) sudo nala install -y ubuntu-edu-primary ;;
         3) sudo nala install -y ubuntu-edu-secondary ;;
@@ -72,11 +70,9 @@ echo "2) Yes, Setup Firejail (PC)"
 echo "3) No, Don't Setup Firejail"
 
 # Use pick() to force a valid response between 1 and 3
-# Note: Passed the green ANSI escape color codes directly into the function call
-choice=$(pick $'\e[32mEnter choice [1-3]:\e[0m' 1 3)
+case $(pick "Choice [1-3]:" 1 3) in
 
-case $choice in
-    '1')
+      1)
         # Install necessary packages
         sudo add-apt-repository ppa:deki/firejail
         sudo nala update
@@ -99,9 +95,7 @@ case $choice in
         cp ~/linuxmintsetup/firejail-configs/Laptop/firefox.local ~/.config/firejail/firefox.local
         cp ~/linuxmintsetup/firejail-configs/Laptop/librewolf.local ~/.config/firejail/librewolf.local
 
-        echo "==========================================="
-        echo "          Firejail Config Success          "
-        echo "==========================================="
+        ok "Firejail Config Success"
 
         # Do firecfg
         sudo firecfg
@@ -112,7 +106,7 @@ case $choice in
         sudo aa-status || exit 1
         ;;
 
-    '2')
+      2)
         # Install necessary packages
         sudo add-apt-repository ppa:deki/firejail
         sudo nala update
@@ -149,10 +143,7 @@ case $choice in
 EOF
 
         info "Excluded Libreoffice"
-
-        echo "==========================================="
-        echo "          Firejail Config Success          "
-        echo "==========================================="
+        ok "Firejail Config Success"
 
         # Do firecfg
         sudo firecfg
@@ -163,15 +154,12 @@ EOF
         sudo aa-status || exit 1
         ;;
 
-    '3')
-        clear
-        echo "=================================================="
-        echo "          Skipping Firejail Installation.         "
-        echo "=================================================="
+      3)
+        info "Skipping Firejail Installation. "
+        exit 0
         ;;
     *)
-        echo "Invalid choice. Exiting."
-        exit 1
+        err "Invalid choice."
         ;;
 esac
 }
@@ -203,13 +191,12 @@ configure_bash() {
                 echo "How would you like to install ble.sh?"
                 echo "1) Git"
                 echo "2) Nix"
-                read -p $'\e[32mEnter choice [1-2]: \e[0m' ble_choice
-                case $ble_choice in
-                    '1')
+                case $(pick "Choice [1-2]:" 1 2) in
+                     1)
                         git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git /tmp/ble.sh
                         make -C /tmp/ble.sh install PREFIX="$HOME/.local"
                         ;;
-                    '2')
+                     2)
                         nix profile install nixpkgs#ble-sh
                         ;;
                     *)
@@ -246,10 +233,10 @@ EOF
     done
 
     # Clear pre-existing managed sections using a quick pass of sed
-    sudo sed -i '/^# === managed block - do not edit ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.bashrc" 2>/dev/null || true
+    sed -i '/^# === apps.sh managed block ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.bashrc" 2>/dev/null || true
 
     grep -q "=== apps.sh managed block" "$HOME/.bashrc" 2>/dev/null || cat >> "$HOME/.bashrc" << 'BASHEOF'
-# === apps.sh managed block - do not edit manually ===
+# === apps.sh managed block ===
 eval "$(atuin init bash)"
 
 [ -f "$HOME/.local/share/blesh/ble.sh" ] && source "$HOME/.local/share/blesh/ble.sh"
@@ -365,10 +352,10 @@ configure_zsh() {
     fi
 
     # Clear pre-existing managed sections using a quick pass of sed
-    sudo sed -i '/^# === managed block - do not edit ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.zshrc" 2>/dev/null || true
+    sed -i '/^# === apps.sh managed block ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.zshrc" 2>/dev/null || true
 
     grep -q "=== apps.sh managed block" "$HOME/.zshrc" 2>/dev/null || cat >> "$HOME/.zshrc" << 'ZSHEOF'
-# === apps.sh managed block - do not edit manually ===
+# === apps.sh managed block ===
 eval "$(atuin init zsh)"
 
 # Aliases
@@ -469,9 +456,10 @@ configure_fish() {
     mkdir -p "$FISH_CONFIG_DIR"
 
     # Clear pre-existing managed sections using a quick pass of sed
-    sudo sed -i '/^# === managed block - do not edit ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.config/fish/config.fish" 2>/dev/null || true
+    sed -i '/^# === apps.sh managed block ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.config/fish/config.fish" 2>/dev/null || true
 
-        cat > "$FISH_CONFIG_FILE" << 'FISHEOF'
+    cat > "$FISH_CONFIG_FILE" << 'FISHEOF'
+# === apps.sh managed block ===
 if status is-interactive
     set -gx ATUIN_NOBIND true
     atuin init fish | source
@@ -596,6 +584,8 @@ end
 if command -v thefuck >/dev/null
     thefuck --alias | source
 end
+
+# === end of apps.sh block ===
 FISHEOF
     ok "Fish configured at $FISH_CONFIG_FILE"
     sleep 1

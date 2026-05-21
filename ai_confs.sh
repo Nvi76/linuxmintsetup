@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+source "$(cd "$(dirname "$0")" && pwd)/lib.sh"
 
 # =========================================================
-# Ollama + OpenCode + Alpaca setup helper
+# AI Tools setup helper
 # =========================================================
-
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
 OPENCODE_CONFIG_DIR="${HOME}/.config/opencode"
 OPENCODE_CONFIG_FILE="${OPENCODE_CONFIG_DIR}/opencode.json"
 
@@ -69,12 +63,12 @@ wait_for_ollama() {
     return
   fi
 
-  error "Ollama service is not running."
+  err "Ollama service is not running."
 
   echo
-  echo "Start it with:"
+  info "Start it with:"
   echo
-  echo "  ollama serve"
+  info "  ollama serve"
   echo
 
   info "Waiting for Ollama to become available..."
@@ -85,7 +79,7 @@ wait_for_ollama() {
   done
 
   echo
-  success "Ollama is now running."
+  ok "Ollama is now running."
 }
 
 install_instructions() {
@@ -113,16 +107,15 @@ show_target_menu() {
   echo "5) Alpaca"
   echo "6) All"
   echo
-  read -rp "Enter choice [1-6]: " choice
 
-  case "$choice" in
+  case $(pick "Choice [1-6]:" 1 6) in
     1) TARGET="ollama" ;;
     2) TARGET="opencode" ;;
     3) TARGET="ollama_opencode" ;;
     4) TARGET="ollama_alpaca" ;;
     5) TARGET="alpaca" ;;
     6) TARGET="all" ;;
-    *) echo "Invalid choice, defaulting to all."; TARGET="all" ;;
+    *) err "Invalid choice, defaulting to all."; TARGET="all" ;;
   esac
 
   echo
@@ -510,7 +503,7 @@ EOF
 
 pull_models_interactive() {
   echo
-  read -rp "Enter Ollama models to install, they must be space separated (Examples: Laptop = qwen2.5-coder:7b gemma3:4b(image) moondream:1.8b(image lightweight), and PC = qwen2.5-coder:7b llama3.1:8b(general) gemma3:4b, or press Enter to skip: " models_input
+  read -rp "Enter Ollama models to install, they must be space separated or press Enter to skip: " models_input
 
   if [[ -z "${models_input// }" ]]; then
     info "Skipping model installation."

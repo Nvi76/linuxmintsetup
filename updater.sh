@@ -2,25 +2,29 @@
 
 # UI helpers
 RED='\033[0;31m'; GREEN="\e[38;2;85;207;62m"; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
-info()  { echo -e "${YELLOW}➜ $1${NC}"; }
-ok()    { echo -e "${GREEN}✓ $1${NC}"; }
-err()   { echo -e "${RED}✗ $1${NC}"; }
+info()  { echo -e "${YELLOW}=> $1${NC}"; }
+ok()    { echo -e "${GREEN}=> $1${NC}"; }
+err()   { echo -e "${RED}=> $1${NC}"; }
 header(){ echo; echo -e "${GREEN}══ $1 ══${NC}"; }
 
-# Update ClamAV & Rkhunter
-sudo systemctl stop clamav-freshclam || exit 1
-sudo freshclam || exit 1
-sudo rkhunter --update || exit 1
-sudo systemctl start clamav-freshclam || exit 1
+# == Security ==
+        clear
+        header "Security"
+        # Update ClamAV & Rkhunter
+        sudo systemctl stop clamav-freshclam || exit 1
+        sudo freshclam || exit 1
+        sudo rkhunter --update || exit 1
+        sudo systemctl start clamav-freshclam || exit 1
 
-# Update Hblock
-hblock
+        # Update Hblock
+        hblock
 
-# Update system
-sudo nala full-upgrade -y || exit 1
+        # Update system
+        sudo nala full-upgrade -y || exit 1
 
-# AI tools
-
+# == AI tools ==
+        clear
+        header "AI Tools"
         # Update Ollama
         info "Checking for Ollama updates..."
         current_ollama=$(ollama -v 2>/dev/null | awk '{print $NF}' | sed 's/^v//')
@@ -46,8 +50,9 @@ sudo nala full-upgrade -y || exit 1
             echo "OpenCode is up to date ($current_opencode)."
         fi
 
-# Apps
-
+# == Apps ==
+        clear
+        header "Apps"
         # Update Flatpak apps
         flatpak update -y || exit 1
 
@@ -70,8 +75,9 @@ sudo nala full-upgrade -y || exit 1
             info "Skipping, Nix is not installed or not in the PATH"
         fi
 
-# Shell Tools
-
+# == Shell Tools ==
+        clear
+        header "Shell Tools"
         # Update ble.sh (git install)
         if [ -d "$HOME/.local/share/blesh" ] && [ ! -f "$HOME/.local/share/blesh/.git" ]; then
             if command -v nix &>/dev/null && nix profile list 2>/dev/null | grep -q ble-sh; then
@@ -103,14 +109,13 @@ sudo nala full-upgrade -y || exit 1
             git -C "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" pull --ff-only
         fi
 
-# Power
-
+# == Power Management ==
+        clear
+        header "Power Management"
         # Update auto-cpufreq
         if command -v auto-cpufreq &>/dev/null; then
             echo "Updating auto-cpufreq..."
             sudo auto-cpufreq --update || info "auto-cpufreq update skipped"
         fi
 
-echo "====================================="
-echo "       All Updates Completed.        "
-echo "====================================="
+ok "All Updates Complete"

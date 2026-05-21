@@ -79,11 +79,10 @@ if yn "Remove AI Apps?"; then
         info "Command Failed or Cancelled"
 fi
 
-# Remove GameDev Apps (Godot, LDtk, Libresprite)
+# Remove GameDev Apps
 clear
-echo "======================================"
-echo "         Remove GameDev Apps?"
-echo "======================================"
+header "GameDev Apps"
+info "Remove GameDev Apps?"
 echo "This will remove Godot, LDtk, and Libresprite along with their configs."
 echo "Do you want to continue?"
 echo "1) Yes, Remove GameDev Apps"
@@ -93,9 +92,9 @@ case $(pick "Choice [1-2]:" 1 2) in
       1)
         echo "Removing GameDev apps..."
 
-        rm -f ~/linuxmintsetup/Godot* 2>/dev/null || true
-        rm -f ~/linuxmintsetup/LDtk* 2>/dev/null || true
-        rm -f ~/linuxmintsetup/LibreSprite* 2>/dev/null || true
+        rm -f $SCRIPT_DIR/Godot* 2>/dev/null || true
+        rm -f $SCRIPT_DIR/LDtk* 2>/dev/null || true
+        rm -f $SCRIPT_DIR/LibreSprite* 2>/dev/null || true
 
         rm -rf ~/.config/godot 2>/dev/null || true
         rm -rf ~/.config/ldtk 2>/dev/null || true
@@ -103,10 +102,6 @@ case $(pick "Choice [1-2]:" 1 2) in
         rm -rf ~/.local/share/libresprite 2>/dev/null || true
         rm -rf ~/.config/GearLever 2>/dev/null || true
         ok "Removed GameDev apps and configs."
-
-        echo "================================="
-        echo "      GameDev Apps Removed       "
-        echo "================================="
         ;;
 
       2)
