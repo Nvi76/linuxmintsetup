@@ -125,7 +125,7 @@ if yn "Configure Git?" Y; then
     git config --global user.name "$git_name" || exit 1
     git config --global user.email "$git_email" || exit 1
 
-    echo "Git configured with name: $git_name and email: $git_email"
+    ok "Git configured with name: $git_name and email: $git_email"
 
     # Generate SSH key for GitHub
     if [ ! -f "$HOME/.ssh/id_ed25519.pub" ]; then
@@ -243,4 +243,4 @@ configure_shells() {
 
 configure_shells
 
-ok "Security Setup Complete."
+ok "Base Setup Complete."
