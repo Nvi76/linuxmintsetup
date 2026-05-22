@@ -128,7 +128,6 @@ if yn "Do you want to install Additional tools? (Usually not needed for desktop 
 fi
 
 # Additionals2
-clear
 URL="http://127.0.0.1:7657/"
 
 if yn "Do you want to install Additional tool? (2)" N; then
@@ -169,6 +168,7 @@ fi
 # ===============
 #   Development
 # ===============
+clear
 header "Cli, Development, and Others"
 
 # Git Setup
@@ -194,14 +194,15 @@ if yn "Configure Git?" Y; then
 fi
 
 # Homebrew
-if yn "Do you want to install Homebrew? (y/n):" Y; then
+if yn "Do you want to install Homebrew and Homebrew Apps?" Y; then
     # Install Homebrew
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || exit 1
 
     # Load Homebrew for current session
-    if [ -f /home/linuxbrew/.linuxbrew/bin/brew ]; then
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    fi
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    
+    # Homebrew Apps
+    brew install distrobox podman fzf ranger btop thefuck trash-cli fastfetch
 
 fi
 
@@ -219,21 +220,6 @@ if yn "Do you want to install NixPkg Manager?" N; then
     # Configuring nix
     mkdir -p ~/.config/nix
     grep -q 'experimental-features = nix-command' ~/.config/nix/nix.conf 2>/dev/null || echo 'experimental-features = nix-command' >> ~/.config/nix/nix.conf
-
-fi
-
-# Homebrew
-if yn "Do you want to install Homebrew & Homebrew Apps?" Y; then
-
-    # Load Homebrew for current session
-    if [ -f /home/linuxbrew/.linuxbrew/bin/brew ]; then
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    fi
-
-    # Homebrew apps
-    if command -v brew &>/dev/null; then
-        brew install distrobox podman fzf ranger btop thefuck trash-cli fastfetch
-    fi
 
 fi
 

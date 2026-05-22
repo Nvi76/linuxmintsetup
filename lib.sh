@@ -179,7 +179,6 @@ configure_bash() {
     fi
 
     # ble.sh
-    clear
     if yn "Do you want to install ble.sh?" Y; then
         echo "How would you like to install ble.sh?"
         echo "1) Git"
@@ -213,10 +212,10 @@ EOF
     fi
 
     # Clear pre-existing managed sections using a quick pass of sed
-    sed -i '/^# === apps.sh managed block ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.bashrc" 2>/dev/null || true
+    sed -i '/^# === setup-base.sh managed block ===$/,/^# === end of setup-base.sh block ===$/d' "$HOME/.bashrc" 2>/dev/null || true
 
-    grep -q "=== apps.sh managed block" "$HOME/.bashrc" 2>/dev/null || cat >> "$HOME/.bashrc" << 'BASHEOF'
-# === apps.sh managed block ===
+    grep -q "=== setup-base.sh managed block" "$HOME/.bashrc" 2>/dev/null || cat >> "$HOME/.bashrc" << 'BASHEOF'
+# === setup-base.sh managed block ===
 eval "$(atuin init bash)"
 
 [ -f "$HOME/.local/share/blesh/ble.sh" ] && source "$HOME/.local/share/blesh/ble.sh"
@@ -291,7 +290,7 @@ if command -v opencode &>/dev/null; then
     source <(opencode completion bash 2>/dev/null) 2>/dev/null || true
 fi
 
-# === end of apps.sh block ===
+# === end of setup-base.sh block ===
 BASHEOF
     ok "Bash configured at ~/.bashrc"
     sleep 1
@@ -331,10 +330,10 @@ configure_zsh() {
     fi
 
     # Clear pre-existing managed sections using a quick pass of sed
-    sed -i '/^# === apps.sh managed block ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.zshrc" 2>/dev/null || true
+    sed -i '/^# === setup-base.sh managed block ===$/,/^# === end of setup-base.sh block ===$/d' "$HOME/.zshrc" 2>/dev/null || true
 
-    grep -q "=== apps.sh managed block" "$HOME/.zshrc" 2>/dev/null || cat >> "$HOME/.zshrc" << 'ZSHEOF'
-# === apps.sh managed block ===
+    grep -q "=== setup-base.sh managed block" "$HOME/.zshrc" 2>/dev/null || cat >> "$HOME/.zshrc" << 'ZSHEOF'
+# === setup-base.sh managed block ===
 eval "$(atuin init zsh)"
 
 # Aliases
@@ -408,7 +407,7 @@ if command -v opencode &>/dev/null; then
     source <(opencode completion zsh 2>/dev/null) 2>/dev/null || true
 fi
 
-# === end of apps.sh block ===
+# === end of setup-base.sh block ===
 ZSHEOF
     ok "Zsh configured at ~/.zshrc"
     sleep 1
@@ -434,10 +433,10 @@ configure_fish() {
     mkdir -p "$FISH_CONFIG_DIR"
 
     # Clear pre-existing managed sections using a quick pass of sed
-    sed -i '/^# === apps.sh managed block ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.config/fish/config.fish" 2>/dev/null || true
+    sed -i '/^# === setup-base.sh managed block ===$/,/^# === end of setup-base.sh block ===$/d' "$HOME/.config/fish/config.fish" 2>/dev/null || true
 
     cat > "$FISH_CONFIG_FILE" << 'FISHEOF'
-# === apps.sh managed block ===
+# === setup-base.sh managed block ===
 if status is-interactive
     set -gx ATUIN_NOBIND true
     atuin init fish | source
@@ -563,7 +562,7 @@ if command -v thefuck >/dev/null
     thefuck --alias | source
 end
 
-# === end of apps.sh block ===
+# === end of setup-base.sh block ===
 FISHEOF
     ok "Fish configured at $FISH_CONFIG_FILE"
     sleep 1
