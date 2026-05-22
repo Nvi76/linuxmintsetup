@@ -89,11 +89,11 @@ case $(pick "Choice [1-3]:" 1 3) in
         mkdir -p "$HOME/.mozilla/firefox"
 
         # Copy configuration files (Laptop-specific configs)
-        cp ~/linuxmintsetup/firejail-configs/Laptop/helium.profile ~/.config/firejail/helium.profile
-        cp ~/linuxmintsetup/firejail-configs/Laptop/brave.local ~/.config/firejail/brave.local
-        cp ~/linuxmintsetup/firejail-configs/Laptop/brave.local ~/.config/firejail/chromium.local
-        cp ~/linuxmintsetup/firejail-configs/Laptop/firefox.local ~/.config/firejail/firefox.local
-        cp ~/linuxmintsetup/firejail-configs/Laptop/librewolf.local ~/.config/firejail/librewolf.local
+        cp "$SCRIPT_DIR"/firejail-configs/Laptop/helium.profile ~/.config/firejail/helium.profile
+        cp "$SCRIPT_DIR"/firejail-configs/Laptop/brave.local ~/.config/firejail/brave.local
+        cp "$SCRIPT_DIR"/firejail-configs/Laptop/brave.local ~/.config/firejail/chromium.local
+        cp "$SCRIPT_DIR"/firejail-configs/Laptop/firefox.local ~/.config/firejail/firefox.local
+        cp "$SCRIPT_DIR"/firejail-configs/Laptop/librewolf.local ~/.config/firejail/librewolf.local
 
         ok "Firejail Config Success"
 
@@ -124,11 +124,11 @@ case $(pick "Choice [1-3]:" 1 3) in
         mkdir -p "$HOME/.cache/net.imput.helium"
 
         # Copy configuration files (PC-specific configs)
-        cp ~/linuxmintsetup/firejail-configs/PC/helium.profile ~/.config/firejail/helium.profile
-        cp ~/linuxmintsetup/firejail-configs/PC/brave.local ~/.config/firejail/brave.local
-        cp ~/linuxmintsetup/firejail-configs/PC/brave.local ~/.config/firejail/chromium.local
-        cp ~/linuxmintsetup/firejail-configs/PC/firefox.local ~/.config/firejail/firefox.local
-        cp ~/linuxmintsetup/firejail-configs/PC/librewolf.local ~/.config/firejail/librewolf.local
+        cp "$SCRIPT_DIR"/firejail-configs/PC/helium.profile ~/.config/firejail/helium.profile
+        cp "$SCRIPT_DIR"/firejail-configs/PC/brave.local ~/.config/firejail/brave.local
+        cp "$SCRIPT_DIR"/firejail-configs/PC/brave.local ~/.config/firejail/chromium.local
+        cp "$SCRIPT_DIR"/firejail-configs/PC/firefox.local ~/.config/firejail/firefox.local
+        cp "$SCRIPT_DIR"/firejail-configs/PC/librewolf.local ~/.config/firejail/librewolf.local
 
         sudo tee /etc/firejail/firecfg.d/ExcludedApps.conf > /dev/null << 'EOF'
 !libreoffice
@@ -167,7 +167,6 @@ esac
 
 configure_bash() {
 
-    clear
     header "Configuring Bash"
 
     # bash-completion
@@ -181,36 +180,28 @@ configure_bash() {
 
     # ble.sh
     clear
-    echo "Do you want to install ble.sh? (y/n):"
-    while true; do
-        read -t 5 -rp "Answer [y/n]: " reply
-        reply=${reply:-Y}
-        case $reply in
-            [Yy])
-                echo "How would you like to install ble.sh?"
-                echo "1) Git"
-                echo "2) Nix"
-                case $(pick "Choice [1-2]:" 1 2) in
-                     1)
-                        git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git /tmp/ble.sh
-                        make -C /tmp/ble.sh install PREFIX="$HOME/.local"
-                        ;;
-                     2)
-                        nix profile install nixpkgs#ble-sh
-                        ;;
-                    *)
-                        err "Invalid choice."
-                        ;;
-                esac
+    if yn "Do you want to install ble.sh?" Y; then
+        echo "How would you like to install ble.sh?"
+        echo "1) Git"
+        echo "2) Nix"
+        case $(pick "[1-2]" 1 2) in
+            '1')
+            git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git /tmp/ble.sh
+            make -C /tmp/ble.sh install PREFIX="$HOME/.local"
+            ;;
+            '2')
+            nix profile install nixpkgs#ble-sh
+            ;;
+            *)
+            err "Invalid choice. Skipping ble.sh."
+        esac
 
-                # Apply to both Git and Nix installs
-                grep -q "blesh/ble.sh" "$HOME/.bashrc" 2>/dev/null || cat >> "$HOME/.bashrc" << 'EOF'
+        grep -q "blesh/ble.sh" "$HOME/.bashrc" 2>/dev/null || cat >> "$HOME/.bashrc" << 'EOF'
 # ble.sh
 [ -f "$HOME/.local/share/blesh/ble.sh" ] && source "$HOME/.local/share/blesh/ble.sh"
 EOF
 
-                cat > ~/.blerc << 'EOF'
-# Performance-optimized ble.sh settings
+        cat > ~/.blerc << 'EOF'
 bleopt complete_auto_delay=200
 bleopt highlight_syntax=
 bleopt complete_auto_history=
@@ -219,17 +210,7 @@ HISTFILESIZE=10000
 shopt -s histappend
 bleopt edit_bell=vbell
 EOF
-                break
-                ;;
-            [Nn])
-                echo "Skipping ble.sh installation."
-                break
-                ;;
-            *)
-                echo "Please answer y or n."
-                ;;
-        esac
-    done
+    fi
 
     # Clear pre-existing managed sections using a quick pass of sed
     sed -i '/^# === apps.sh managed block ===$/,/^# === end of apps.sh block ===$/d' "$HOME/.bashrc" 2>/dev/null || true
@@ -318,7 +299,6 @@ BASHEOF
 
 configure_zsh() {
 
-    clear
     header "Configuring Zsh..."
 
     # Install Zsh
@@ -436,7 +416,6 @@ ZSHEOF
 
 configure_fish() {
 
-    clear
     header "Configuring Fish..."
 
     # Install fish if not present

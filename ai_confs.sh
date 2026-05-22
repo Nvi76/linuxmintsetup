@@ -10,25 +10,6 @@ OPENCODE_CONFIG_FILE="${OPENCODE_CONFIG_DIR}/opencode.json"
 
 TARGET="all"
 
-print_header() {
-  echo
-  echo -e "${BLUE}=========================================================${NC}"
-  echo -e "${BLUE}               $1${NC}"
-  echo -e "${BLUE}=========================================================${NC}"
-}
-
-info() {
-  echo -e "${YELLOW}➜ $1${NC}"
-}
-
-success() {
-  echo -e "${GREEN}✓ $1${NC}"
-}
-
-error() {
-  echo -e "${RED}✗ $1${NC}"
-}
-
 pause_continue() {
   read -rp "Press Enter to continue..."
 }
@@ -49,17 +30,17 @@ require_command() {
   local cmd="$1"
 
   if ! command_exists "$cmd"; then
-    error "$cmd is not installed."
+    err "$cmd is not installed."
     return 1
   fi
 
-  success "$cmd is installed."
+  ok "$cmd is installed."
   return 0
 }
 
 wait_for_ollama() {
   if is_ollama_running; then
-    success "Ollama service is already running."
+    ok "Ollama service is already running."
     return
   fi
 
@@ -187,7 +168,7 @@ create_base_opencode_config() {
 }
 EOF
 
-  success "Created OpenCode config."
+  ok "Created OpenCode config."
 }
 
 detect_installed_models() {
@@ -392,7 +373,7 @@ detect_and_enable_model_capabilities() {
 }
 
 show_alpaca_instructions() {
-  print_header "Alpaca Configuration"
+  header "Alpaca Configuration"
 
   cat <<EOF
 Alpaca does NOT automatically connect to external Ollama servers.
@@ -458,7 +439,7 @@ check_model_context() {
 }
 
 show_context_window_instructions() {
-  print_header "Context Window Configuration"
+  header "Context Window Configuration"
 
   cat <<EOF
 IMPORTANT: OpenCode requires a larger context window (recommended: 16384+ tokens).
@@ -486,7 +467,6 @@ EOF
   mapfile -t installed < <(detect_installed_models)
 
   for model in "${installed[@]}"; do
-    local msg
     if check_model_context "$model"; then
       echo "  ollama run $model"
       echo "    /set parameter num_ctx 16384"
@@ -516,16 +496,16 @@ pull_models_interactive() {
     info "Pulling model: $model"
 
     if ollama pull "$model"; then
-      success "Installed model: $model"
+      ok "Installed model: $model"
     else
-      error "Failed to install: $model"
+      err "Failed to install: $model"
     fi
   done
 }
 
 main() {
   clear
-  print_header "AI Tools Configuration"
+  header "AI Tools Configuration"
 
   show_target_menu
 
@@ -536,34 +516,34 @@ main() {
 
   if [[ "$TARGET" == "ollama" || "$TARGET" == "ollama_opencode" || "$TARGET" == "ollama_alpaca" || "$TARGET" == "all" ]]; then
     if ! command_exists ollama; then
-      error "Ollama is not installed."
+      err "Ollama is not installed."
       need_install=true
     else
-      success "Ollama is installed."
+      ok "Ollama is installed."
     fi
   fi
 
   if [[ "$TARGET" == "opencode" || "$TARGET" == "ollama_opencode" || "$TARGET" == "all" ]]; then
     if ! command_exists opencode; then
-      error "OpenCode is not installed."
+      err "OpenCode is not installed."
       need_install=true
     else
-      success "OpenCode is installed."
+      ok "OpenCode is installed."
     fi
   fi
 
   if [[ "$TARGET" == "alpaca" || "$TARGET" == "ollama_alpaca" || "$TARGET" == "all" ]]; then
     if ! flatpak_app_installed com.jeffser.Alpaca; then
-      error "Alpaca is not installed."
+      err "Alpaca is not installed."
       need_install=true
     else
-      success "Alpaca is installed."
+      ok "Alpaca is installed."
     fi
   fi
 
   if $need_install; then
     echo
-    error "Some applications are missing. Install them from apps.sh first."
+    err "Some applications are missing. Install them from apps.sh first."
     install_instructions
     exit 1
   fi
@@ -574,7 +554,7 @@ main() {
   fi
 
   if [[ "$TARGET" == "opencode" || "$TARGET" == "ollama_opencode" || "$TARGET" == "all" ]]; then
-    print_header "OpenCode Configuration"
+    header "OpenCode Configuration"
 
     create_base_opencode_config
 
@@ -583,7 +563,7 @@ main() {
     mapfile -t installed_models < <(detect_installed_models)
 
     if [[ ${#installed_models[@]} -eq 0 ]]; then
-      error "No installed Ollama models detected."
+      err "No installed Ollama models detected."
     else
       echo
       echo "Detected models:"
@@ -603,20 +583,20 @@ main() {
   fi
 
   if [[ "$TARGET" == "alpaca" || "$TARGET" == "ollama_alpaca" || "$TARGET" == "all" ]]; then
-    print_header "Alpaca Configuration"
+    header "Alpaca Configuration"
     show_alpaca_instructions
   fi
 
-  print_header "Connection Verification"
+  header "Connection Verification"
 
   if curl -fsS --max-time 5 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
-    success "Ollama API is responding"
+    ok "Ollama API is responding"
   else
-    error "Cannot reach Ollama API at http://127.0.0.1:11434"
+    err "Cannot reach Ollama API at http://127.0.0.1:11434"
     echo "  Ensure Ollama is running: ollama serve"
   fi
 
-  print_header "Setup Complete"
+  header "Setup Complete"
 
   echo -e "${GREEN}Configured: $TARGET${NC}"
   echo

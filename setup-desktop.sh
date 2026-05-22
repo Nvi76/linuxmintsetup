@@ -23,38 +23,6 @@ sudo nala full-upgrade -y; ok "System Updated" || exit 1
 #      Apps
 # ===============
 
-# Install Deb Apps
-if yn "Do you want to install .deb Apps?" Y; then
-    sudo nala install -y vulkan-tools build-essential python3-tk tmux unzip xclip || exit 1
-fi
-
-# Nix
-if yn "Do you want to install NixPkg Manager?" N; then
-
-    # Install Nixpkgmngr
-    sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
-
-    # Configuring nix
-    mkdir -p ~/.config/nix
-    grep -q 'experimental-features = nix-command' ~/.config/nix/nix.conf 2>/dev/null || echo 'experimental-features = nix-command' >> ~/.config/nix/nix.conf
-
-fi
-
-# Homebrew
-if yn "Do you want to install Homebrew & Homebrew Apps?" Y; then
-
-    # Load Homebrew for current session
-    if [ -f /home/linuxbrew/.linuxbrew/bin/brew ]; then
-        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    fi
-
-    # Homebrew apps
-    if command -v brew &>/dev/null; then
-        brew install distrobox podman fzf ranger btop thefuck trash-cli fastfetch
-    fi
-
-fi
-
 clear
 header "Additional Browsers"
 
@@ -105,69 +73,24 @@ if yn "Do you want to install Zen Browser?" Y; then
 fi
 
 clear
-header "Additional tools and games"
+header "Additional Tools and Games"
 
-# Install Additional
-if yn "Do you want to install Additional tools? (Usually not needed for desktop usage)" N; then
-    wget https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.8_all.deb
-    sudo dpkg -i protonvpn-stable-release_1.0.8_all.deb
-
-    sudo add-apt-repository -y ppa:micahflee/ppa
-    sudo nala install -y proton-vpn-cli torbrowser-launcher
-    sudo systemctl start proton-vpn-daemon.service
-
-    sudo protonvpn init
-    protonvpn connect --fastest > /dev/null
-fi
-
-# Additionals2
-clear
-URL="http://127.0.0.1:7657/"
-
-if yn "Do you want to install Additional tool? (2)" N; then
-    sudo add-apt-repository -y ppa:i2p-maintainers/i2p
-
-    sudo nala update
-    sudo nala install -y i2pd curl
-
-    sudo systemctl start i2pd > /dev/null 2>&1
-
-    until curl -s http://127.0.0.1:7657 > /dev/null; do
-        sleep 2
-    done
-
-    found=false
-
-    for browser in "${BROWSERS[@]}"; do
-        if command -v "$browser" &>/dev/null; then
-            echo "Launching $browser..."
-            "$browser" "$URL" &
-            found=true
-        fi
-    done
-
-    if ! $found; then
-        info "No supported browser found."
-        echo "1) firefox"
-        echo "2) chromium-browser"
-
-        case $(pick "Choice [1-2]:" 1 2) in
-            1) sudo nala install -y firefox ;;
-            2) sudo nala install -y chromium-browser ;;
-            *) err "Invalid option" ;;
-        esac
-    fi
+# Office
+if yn "Install Office Apps? (Libreoffice & Onlyoffice?)" Y; then
+    if yn "Install Libreoffice?" Y; then sudo nala install -y libreoffice; fi
+    if yn "Install OnlyOffice?" Y; then flatpak install flathub org.onlyoffice.desktopeditors --noninteractive; fi
 fi
 
 # Game Dev
 if yn "Do you want to install GameDev Apps?" Y; then
+    mkdir -p "$HOME/Applications"
 
     info "Installing Godot..."
     curl -fL \
         https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_linux.x86_64.zip \
-        -o Godot_v4.6.2-stable_linux.x86_64.zip || exit 1
+        -o "$HOME/Applications/Godot_v4.6.2-stable_linux.x86_64.zip" || exit 1
 
-    unzip -o Godot_v4.6.2-stable_linux.x86_64.zip -d
+    unzip -o "$HOME/Applications/Godot_v4.6.2-stable_linux.x86_64.zip" -d "$HOME/Applications"
 
     info "Install LDtk Manually"
 
@@ -175,7 +98,7 @@ if yn "Do you want to install GameDev Apps?" Y; then
     info "Downloading LibreSprite..."
     flatpak install flathub com.github.libresprite.LibreSprite --noninteractive
 
-    trash-put "/Godot_v4.6.2-stable_linux.x86_64.zip"
+    trash-put "$HOME/Applications/Godot_v4.6.2-stable_linux.x86_64.zip"
 fi
 
 # Games

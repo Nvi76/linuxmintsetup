@@ -17,7 +17,7 @@ header(){ echo; echo -e "${GREEN}══ $1 ══${NC}"; }
         sudo systemctl start clamav-freshclam || exit 1
 
         # Update Hblock
-        hblock
+        hblock || exit 1
 
         # Update system
         sudo nala full-upgrade -y || exit 1

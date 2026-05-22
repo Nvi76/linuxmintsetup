@@ -8,12 +8,13 @@ sudo -v
 chmod +x updater.sh removeconf.sh setup-desktop.sh ai_confs.sh
 
 # Backup hosts & Copy file
-sudo cp /etc/hosts "$HOME/linuxmintsetup/hosts.backup"
+sudo cp /etc/hosts "$SCRIPT_DIR"/hosts.backup
 cp "$SCRIPT_DIR"/updater.sh ~/.updater.sh  || exit 1
 
 # ===============
 #    Security
 # ===============
+header "Security"
 
 # Install base packages & security apps
 sudo apt update
@@ -32,6 +33,8 @@ if yn "Do you want to install Hblock?" Y; then
 fi
 
 # Download Portmaster
+BROWSERS=()
+
 if yn "Do you want to install Portmaster?" Y; then
     info "Downloading Portmaster"
     curl -fL https://updates.safing.io/latest/linux_amd64/packages/Portmaster_2.1.7_amd64.deb \
@@ -89,9 +92,8 @@ maxretry = 2
 EOF"
 
         sudo systemctl enable --now fail2ban || exit 1
-        sudo systemctl reload fail2ban \
-        ok "Fail2Ban configuration applied." || \
-        err "Reload failed."
+        sudo systemctl reload fail2ban
+        ok "Fail2Ban configuration applied."
     else
         info "jail.local already exists. No changes made."
     fi
@@ -112,9 +114,62 @@ if yn "Install & Configure UFW?" Y; then
     sudo systemctl enable --now ufw || exit 1
 fi
 
+# Install Additional
+if yn "Do you want to install Additional tools? (Usually not needed for desktop usage)" N; then
+    wget https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.8_all.deb
+    sudo dpkg -i protonvpn-stable-release_1.0.8_all.deb
+
+    sudo add-apt-repository -y ppa:micahflee/ppa
+    sudo nala install -y proton-vpn-cli torbrowser-launcher
+    sudo systemctl start proton-vpn-daemon.service
+
+    sudo protonvpn init
+    protonvpn connect --fastest > /dev/null
+fi
+
+# Additionals2
+clear
+URL="http://127.0.0.1:7657/"
+
+if yn "Do you want to install Additional tool? (2)" N; then
+    sudo add-apt-repository -y ppa:i2p-maintainers/i2p
+
+    sudo nala update
+    sudo nala install -y i2pd curl
+
+    sudo systemctl start i2pd > /dev/null 2>&1
+
+    until curl -s http://127.0.0.1:7657 > /dev/null; do
+        sleep 2
+    done
+
+    found=false
+
+    for browser in "${BROWSERS[@]}"; do
+        if command -v "$browser" &>/dev/null; then
+            echo "Launching $browser..."
+            "$browser" "$URL" &
+            found=true
+        fi
+    done
+
+    if ! $found; then
+        info "No supported browser found."
+        echo "1) firefox"
+        echo "2) chromium-browser"
+
+        case $(pick "Choice [1-2]:" 1 2) in
+            1) sudo nala install -y firefox ;;
+            2) sudo nala install -y chromium-browser ;;
+            *) err "Invalid option" ;;
+        esac
+    fi
+fi
+
 # ===============
 #   Development
 # ===============
+header "Cli, Development, and Others"
 
 # Git Setup
 if yn "Configure Git?" Y; then
@@ -134,7 +189,7 @@ if yn "Configure Git?" Y; then
         ok "SSH key generated. Add this to GitHub -> Settings -> SSH keys:"
         cat "$HOME/.ssh/id_ed25519.pub"
     else
-        err "SSH key already exists at ~/.ssh/id_ed25519.pub"
+        ok "SSH key already exists at ~/.ssh/id_ed25519.pub"
     fi
 fi
 
@@ -146,6 +201,38 @@ if yn "Do you want to install Homebrew? (y/n):" Y; then
     # Load Homebrew for current session
     if [ -f /home/linuxbrew/.linuxbrew/bin/brew ]; then
         eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    fi
+
+fi
+
+# Install Deb Apps
+if yn "Do you want to install .deb Apps?" Y; then
+    sudo nala install -y vulkan-tools build-essential python3-tk tmux unzip xclip || exit 1
+fi
+
+# Nix
+if yn "Do you want to install NixPkg Manager?" N; then
+
+    # Install Nixpkgmngr
+    sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
+
+    # Configuring nix
+    mkdir -p ~/.config/nix
+    grep -q 'experimental-features = nix-command' ~/.config/nix/nix.conf 2>/dev/null || echo 'experimental-features = nix-command' >> ~/.config/nix/nix.conf
+
+fi
+
+# Homebrew
+if yn "Do you want to install Homebrew & Homebrew Apps?" Y; then
+
+    # Load Homebrew for current session
+    if [ -f /home/linuxbrew/.linuxbrew/bin/brew ]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    fi
+
+    # Homebrew apps
+    if command -v brew &>/dev/null; then
+        brew install distrobox podman fzf ranger btop thefuck trash-cli fastfetch
     fi
 
 fi
