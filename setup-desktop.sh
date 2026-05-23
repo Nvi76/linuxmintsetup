@@ -258,11 +258,10 @@ case $(pick "Choice [1-3]:" 1 3) in
   ok "Power Management Setup Complete."
   ;;
 3)
-  info "Exiting."
+  info "Skipping..."
   ;;
 *)
   err "Invalid option."
-  exit 1
   ;;
 esac
 
