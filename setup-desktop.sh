@@ -181,6 +181,9 @@ fi
 if yn "Do you want to install OpenCode?" Y; then
   info "Installing OpenCode..."
   curl -fsSL https://opencode.ai/install | bash
+
+  # Load OpenCode On Current Session
+  export PATH="$HOME/.local/bin:$PATH"
 fi
 
 # Oterm
