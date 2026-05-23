@@ -19,7 +19,7 @@ header "Security"
 # Install base packages & security apps
 sudo apt update
 sudo apt install -y nala git curl
-sudo nala install -y build-essential fish figlet extrepo \
+sudo nala install -y build-essential fish figlet extrepo vulkan-tools build-essential python3-tk tmux unzip xclip \
 apparmor-utils apparmor-profiles apparmor-profiles-extra wget curl jq software-properties-common gawk shellcheck
 
 # Hblock
@@ -204,11 +204,6 @@ if yn "Do you want to install Homebrew and Homebrew Apps?" Y; then
     # Homebrew Apps
     brew install distrobox podman fzf ranger btop thefuck trash-cli fastfetch
 
-fi
-
-# Install Deb Apps
-if yn "Do you want to install .deb Apps?" Y; then
-    sudo nala install -y vulkan-tools build-essential python3-tk tmux unzip xclip || exit 1
 fi
 
 # Nix

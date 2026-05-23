@@ -94,14 +94,16 @@ fi
 
 # Game Dev
 if yn "Do you want to install GameDev Apps?" Y; then
-  mkdir -p "$HOME/Applications"
+  mkdir -p "$HOME/Projects/Programs"
 
   info "Installing Godot..."
   curl -fL \
     https://github.com/godotengine/godot/releases/download/4.6.2-stable/Godot_v4.6.2-stable_linux.x86_64.zip \
-    -o "$HOME/Applications/Godot_v4.6.2-stable_linux.x86_64.zip" || exit 1
+    -o "$HOME/Projects/Programs/Godot_v4.6.2-stable_linux.x86_64.zip" || exit 1
 
-  unzip -o "$HOME/Applications/Godot_v4.6.2-stable_linux.x86_64.zip" -d "$HOME/Applications"
+  unzip -o "$HOME/Projects/Programs/Godot_v4.6.2-stable_linux.x86_64.zip" -d "$HOME/Projects/Programs"
+
+  curl -fL https://godotengine.org/assets/press/icon_color.svg -o "$HOME/Projects/Programs/godot_icon_color.svg" -d "$HOME/Projects/Programs"
 
   info "Install LDtk Manually"
 
