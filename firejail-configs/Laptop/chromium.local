@@ -19,3 +19,7 @@ ignore apparmor
 
 # Whitelisted Folders
 whitelist ${HOME}/Allowed
+
+# Web Apps (Linux Mint ice)
+noblacklist ${HOME}/.local/share/ice
+whitelist ${HOME}/.local/share/ice

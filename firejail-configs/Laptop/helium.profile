@@ -8,6 +8,10 @@ whitelist ${HOME}/Allowed
 whitelist ${HOME}/.config/net.imput.helium
 whitelist ${HOME}/.cache/net.imput.helium
 
+# Web Apps (Linux Mint ice)
+noblacklist ${HOME}/.local/share/ice
+whitelist ${HOME}/.local/share/ice
+
 # Ignores
 ignore noshm
 

@@ -2,3 +2,7 @@
 whitelist ${HOME}/Downloads
 whitelist ${HOME}/Allowed/AllowedDocs
 whitelist ${HOME}/Allowed/AllowedPics
+
+# Web Apps (Linux Mint ice)
+noblacklist ${HOME}/.local/share/ice
+whitelist ${HOME}/.local/share/ice

@@ -6,3 +6,7 @@ noblacklist ${HOME}/.config/mozilla
 noblacklist ${HOME}/.cache/mozilla
 whitelist ${HOME}/.config/mozilla/firefox
 whitelist ${HOME}/.cache/mozilla/firefox
+
+# Web Apps (Linux Mint ice)
+noblacklist ${HOME}/.local/share/ice
+whitelist ${HOME}/.local/share/ice
