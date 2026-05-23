@@ -46,12 +46,11 @@ git push
 
 **Files**
 ```
-git add . -- ':!file.file' # or git add . -- ':!file.file' ':!file.file'
-
+git add . -- ':!file.file' # or for multiple files git add . -- ':!file.file' ':!file.file'
 ```
 **Folders**
 ```
-git add . -- ':!folder/' # or git add . -- ':!folder1/' ':!folder2/' ':!folder3/'   
+git add . -- ':!folder/' # or multiple folders git add . -- ':!folder1/' ':!folder2/' ':!folder3/'   
 ```
 
 # 2. Shell Configs
