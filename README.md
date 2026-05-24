@@ -1,5 +1,6 @@
 # Linux Mint Setup
 Setup and configuration script for linux mint.
+This thing is not really meant to be used by anyone else except for me
 
 # 1. Git Manual
 **1) Git & GitHub Setup**
